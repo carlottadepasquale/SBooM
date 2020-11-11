@@ -1,0 +1,11 @@
+n: 100
+m: 0.5
+a: 0.8
+d: 1.0
+t: 50
+execution: 
+  - "mc"
+  - "out"
+  - "plot"
+  - "bt"
+dataset_dir: "/home/carlottade"
