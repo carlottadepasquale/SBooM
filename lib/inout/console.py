@@ -1,4 +1,5 @@
 import argparse
+import random
 
 def init():
     parser = argparse.ArgumentParser(description='Parametri Hawkes e Monte Carlo')
@@ -7,6 +8,7 @@ def init():
     parser.add_argument('-a','--intensity', help='alpha, intensity of the process')
     parser.add_argument('-d','--decay', help='delta, decay of the process')
     parser.add_argument('-t','--time', help='time of the process')
+    #parser.add_argument('--seed', help='seed for the Hawkes process simulator')
     parser.add_argument('-e','--execution', nargs='+', help='type of execution')
     parser.add_argument('--dataset_dir', help='where to save the dataset')
     argn = parser.parse_args()
@@ -26,6 +28,12 @@ def init():
     if argn.time:
         t = float(argn.time)
         console_param["t"] = t
+    # if argn.seed:
+    #     s = float(argn.time)
+    #     console_param["seed"] = s
+    # else:
+    #     seed = random.seed()
+    #     console_param["seed"] = seed
     if argn.execution:
         e = argn.execution
         console_param["execution"] = e

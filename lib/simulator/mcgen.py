@@ -26,9 +26,10 @@ def hawkes(param):
     interval = [0,t]
     hsim = model.simulate(interval)
     print(hsim.shape)
-    # model.plot_l()
-    # model.plot_N()
-    # plt.show()
+    if "plt" in param["execution"]:
+        model.plot_l()
+        model.plot_N()
+        plt.show()
     return hsim
 
 def inference(hsim, param):
