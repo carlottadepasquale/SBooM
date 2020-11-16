@@ -3,7 +3,11 @@
 #
 # @authors : Carlotta De Pasquale
 import logging
-logger = logging.getLogger('basic')
-logger.setLevel( "DEBUG"  )  #prende anche info, warning e critical
-ch = logging.StreamHandler() #output a commandline
-logger.addHandler(ch)  #aggiunge lo streamhandler al log
+
+def logger_init(rank, logger_name):
+    logger = logging.getLogger(logger_name)
+    logger.setLevel( "DEBUG"  )  #prende anche info, warning e critical
+    ch = logging.StreamHandler() #output a commandline
+    formatter = logging.Formatter("rank: " + str(rank)+ ' %(asctime)s [%(levelname)s] (%(funcName)s) : %(message)s',"%H:%M")
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)  #aggiunge lo streamhandler al log

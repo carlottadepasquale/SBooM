@@ -4,13 +4,27 @@
 from lib import Hawkes as hk
 import numpy as np
 import matplotlib.pyplot as plt
+import time
+import logging
 
 def simulator(param):
-    #iterations = n//size
-    #if rank == size-1:
-    #    iterations = n//size + n%size
-    hsim = hawkes(param)
-    inference(hsim, param)
+    n = param["n"]
+    s = param["size"]
+    r = param["rank"]
+    iterations = param["n"]//param["size"]
+    i_start = r * iterations
+    i_end = i_start + iterations
+    if param["rank"] == param["size"]-1:
+       i_end +=  param["n"]%param["size"]
+    if "seed" in param:
+        np.random.seed(param["seed"] + param["rank"])
+    else:
+        t = int(time.time())
+        np.random.seed(param["rank"] + t)
+    print(param["rank"], iterations, np.random.get_state()[1][0])
+    for i in range(i_start, i_end):
+        hsim = hawkes(param)
+        inference(i, hsim, param)
     
 def hawkes(param):
     
@@ -25,22 +39,24 @@ def hawkes(param):
     model.set_parameter(par)
     interval = [0,t]
     hsim = model.simulate(interval)
-    print(hsim.shape)
     if "plt" in param["execution"]:
         model.plot_l()
         model.plot_N()
         plt.show()
     return hsim
 
-def inference(hsim, param):
-    print("inference")
+def inference(i, hsim, param):
     model = hk.estimator().set_kernel('exp',num_exp=1).set_baseline('const')
     t = int(param['t'])
     interval = [0,t]
     model.fit(hsim, interval)
-    print("parameter: ", model.parameter)
-    print("branching ratio:",model.br) # the branching ratio
-    print("log-likelihood:",model.L) # the log-likelihood of the estimated parameter values
+    log_output = "iteration " + str(i) + "\n"
+    log_output += "parameter: "+ str(model.parameter) + "\n"
+    log_output += "branching ratio: " + str(model.br) + "\n" # the branching ratio
+    log_output += "log-likelihood:" + str(model.L) + "\n" # the log-likelihood of the estimated parameter values
+    logger=logging.getLogger(param["logger"])
+    logger.info(log_output)
+    return log_output
     # # T_trans: a list of transformed event occurrence times, itv_trans: the transformed observation interval
     # [T_trans, itv_trans] = model.t_trans() 
     # # Kormogorov-Smirnov test under the null hypothesis that the transformed event occurrence times are uniformly distributed
