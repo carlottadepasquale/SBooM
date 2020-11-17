@@ -29,9 +29,9 @@ def simulator(param, dataset):
     
 def hawkes(param):
     
-    adjacency = np.array([[param['a']]])
-    decay = np.array([[param['d']]])
-    baseline = np.array([param['m']])
+    adjacency = np.array([[param['alpha']]])
+    decay = np.array([[param['beta']]])
+    baseline = np.array([param['mu']])
     t = int(param['t'])
     model = hk.simulator()
     model.set_kernel('exp')

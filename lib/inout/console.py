@@ -6,7 +6,7 @@ def init():
     parser.add_argument('-n','--number_of_interations' , help='Number of iterations of Monte Carlo', required=False) #se metto false posso usare un valore di default
     parser.add_argument('-m','--baseline', help='Initial condition of the Hawkes process')
     parser.add_argument('-a','--intensity', help='alpha, intensity of the process')
-    parser.add_argument('-d','--decay', help='delta, decay of the process')
+    parser.add_argument('-b','--beta', help='beta, decay of the process')
     parser.add_argument('-t','--time', help='time of the process')
     parser.add_argument('--seed', help='seed for the Hawkes process simulator')
     parser.add_argument('-e','--execution', nargs='+', help='type of execution')
@@ -18,13 +18,13 @@ def init():
         console_param["n"] = n
     if argn.baseline:
         m = float(argn.baseline)
-        console_param["m"] = m
+        console_param["mu"] = m
     if argn.intensity:
         a = float(argn.intensity)
-        console_param["a"] = a
-    if argn.decay:
-        d = float(argn.decay)
-        console_param["d"] = d
+        console_param["alpha"] = a
+    if argn.beta:
+        d = float(argn.beta)
+        console_param["beta"] = b
     if argn.time:
         t = float(argn.time)
         console_param["t"] = t
