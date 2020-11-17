@@ -7,24 +7,25 @@ import matplotlib.pyplot as plt
 import time
 import logging
 
-def simulator(param):
+def simulator(param, dataset):
     n = param["n"]
     s = param["size"]
     r = param["rank"]
-    iterations = param["n"]//param["size"]
-    i_start = r * iterations
-    i_end = i_start + iterations
-    if param["rank"] == param["size"]-1:
-       i_end +=  param["n"]%param["size"]
     if "seed" in param:
         np.random.seed(param["seed"] + param["rank"])
     else:
         t = int(time.time())
         np.random.seed(param["rank"] + t)
-    print(param["rank"], iterations, np.random.get_state()[1][0])
-    for i in range(i_start, i_end):
+    i_local = 0
+    for i in dataset['id']:
         hsim = hawkes(param)
-        inference(i, hsim, param)
+        estimate = inference(i, hsim, param)
+        dataset['t'].append(hsim)
+        dataset['a'][i_local] = estimate['alpha']
+        dataset['b'][i_local] = estimate['beta']
+        dataset['m'][i_local] = estimate['mu']
+        i_local += 1
+    print(str(dataset))
     
 def hawkes(param):
     
@@ -56,7 +57,7 @@ def inference(i, hsim, param):
     log_output += "log-likelihood:" + str(model.L) + "\n" # the log-likelihood of the estimated parameter values
     logger=logging.getLogger(param["logger"])
     logger.info(log_output)
-    return log_output
+    return model.parameter
     # # T_trans: a list of transformed event occurrence times, itv_trans: the transformed observation interval
     # [T_trans, itv_trans] = model.t_trans() 
     # # Kormogorov-Smirnov test under the null hypothesis that the transformed event occurrence times are uniformly distributed

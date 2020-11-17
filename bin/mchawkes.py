@@ -9,6 +9,7 @@ import os
 
 from lib.inout import console
 from lib.inout import reader
+from lib.simulator import dataset
 
 
 comm = MPI.COMM_WORLD #setta il comunicatore: tutti parlano con tutti
@@ -32,11 +33,14 @@ if rank==0:
 param = comm.bcast(file_param, root=0)
 param["rank"] = rank
 
+dataset = dataset.init_dataset(param)
+
 if "mc" in param["execution"]:
     from lib.simulator import mcgen
     print(rank, 'Monte Carlo')
-    mcgen.simulator(param)
-    
+    mcgen.simulator(param, dataset)
+
+
 
     
 
