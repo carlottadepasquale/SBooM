@@ -36,6 +36,7 @@ if "mc" in param["execution"]:
     from lib.simulator import mcgen
     print(rank, 'Monte Carlo')
     mcgen.simulator(param)
+    
 
     
 
