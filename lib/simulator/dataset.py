@@ -7,9 +7,9 @@ def init_dataset(param):
     i_start = mc_dataset['rank_map'][param['rank']]['i_start'] 
     i_end = mc_dataset['rank_map'][param['rank']]['i_end']
     n_local = i_end - i_start
-    mc_dataset['a'] = np.empty(n_local)
-    mc_dataset['b'] = np.empty(n_local)
-    mc_dataset['m'] = np.empty(n_local)
+    mc_dataset['alpha'] = np.empty(n_local)
+    mc_dataset['beta'] = np.empty(n_local)
+    mc_dataset['mu'] = np.empty(n_local)
     mc_dataset['t'] = []
     mc_dataset['n_it'] = param['n']
     mc_dataset['id'] = np.arange(i_start, i_end )

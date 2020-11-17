@@ -5,7 +5,9 @@ beta: 5
 t: 10
 execution: 
   - "mc"
+  - "save"
   - "out"
   - "plt"
   - "bt"
-dataset_dir: "/home/carlottade"
+dataset_dir: "/home/carlottade/Dataset_hdf5/"
+outprefix: "mc_dataset"

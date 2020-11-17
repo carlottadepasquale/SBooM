@@ -19,7 +19,6 @@ file_param = {}
 
 log.logger_init(rank, "basic")
 logger=logging.getLogger('basic')
-logger.info('sta funzionando')
 
 if rank==0:
     console_param = console.init()
@@ -28,8 +27,7 @@ if rank==0:
     file_param.update(console_param)
     file_param["size"] = size
     file_param["logger"] = "basic"
-    print(file_param)
-
+    
 param = comm.bcast(file_param, root=0)
 param["rank"] = rank
 
@@ -37,8 +35,14 @@ dataset = dataset.init_dataset(param)
 
 if "mc" in param["execution"]:
     from lib.simulator import mcgen
-    print(rank, 'Monte Carlo')
+    logger.info('Monte Carlo')
     mcgen.simulator(param, dataset)
+
+
+if "save" in param["execution"]:
+    from lib.inout import writer
+    comm.Barrier()
+    writer.save_hdf5(param, dataset)
 
 
 

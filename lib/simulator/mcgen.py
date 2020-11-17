@@ -21,11 +21,11 @@ def simulator(param, dataset):
         hsim = hawkes(param)
         estimate = inference(i, hsim, param)
         dataset['t'].append(hsim)
-        dataset['a'][i_local] = estimate['alpha']
-        dataset['b'][i_local] = estimate['beta']
-        dataset['m'][i_local] = estimate['mu']
+        dataset['alpha'][i_local] = estimate['alpha']
+        dataset['beta'][i_local] = estimate['beta']
+        dataset['mu'][i_local] = estimate['mu']
         i_local += 1
-    print(str(dataset))
+    
     
 def hawkes(param):
     
