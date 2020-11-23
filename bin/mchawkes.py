@@ -31,11 +31,16 @@ if rank==0:
 param = comm.bcast(file_param, root=0)
 param["rank"] = rank
 
-dataset = dataset.init_dataset(param)
+if ("bt" in param["execution"] or "plt" in param["execution"]) and "input_file" in param:
+    dataset = reader.read_hdf5(param)
+    print(dataset)
+    print(param)
+else:
+    dataset = dataset.init_dataset(param)
 
 if "mc" in param["execution"]:
     from lib.simulator import mcgen
-    logger.info('Monte Carlo')
+    #logger.info('Monte Carlo')
     mcgen.simulator(param, dataset)
 
 
@@ -43,7 +48,6 @@ if "save" in param["execution"]:
     from lib.inout import writer
     comm.Barrier()
     writer.save_hdf5(param, dataset)
-
 
 
     
