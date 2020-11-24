@@ -12,6 +12,7 @@ def init_dataset(param):
     mc_dataset['mu'] = np.empty(n_local)
     mc_dataset['t'] = []
     mc_dataset['n_it'] = param['n']
+    mc_dataset['n_local'] = n_local
     mc_dataset['id'] = np.arange(i_start, i_end )
     return mc_dataset
 
