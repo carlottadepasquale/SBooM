@@ -9,6 +9,6 @@ execution:
   - "out"
   - "plt"
   - "bt"
-dataset_dir: "/home/carlottade/Dataset_hdf5/"
+dataset_dir: "/galileo/home/userinternal/epascol1/dataset/"
 outprefix: "mc_dataset"
-input_file: "mc_dataset_10_100.hdf5"
+input: "mc_dataset_10_100.hdf5"

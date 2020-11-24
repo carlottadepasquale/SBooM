@@ -6,7 +6,28 @@
 import yaml
 import os
 import h5py
+import json
+import sys
+
 from lib.simulator import dataset
+
+
+def json_reader(filepath):
+    """
+    Checking the existence of json file and read it
+    """
+    jfc = "-999"
+    try:
+        if os.path.isfile(filepath) :
+            jfc = json.loads(open(filepath).read())
+        else :
+            sys.exit()
+
+    except:
+        sys.exit("ERROR JSON file not readable "+filepath)
+
+    return jfc
+
 
 def read_yaml_param(path_file):
     """
@@ -18,22 +39,27 @@ def read_yaml_param(path_file):
         dict_file_param = yaml.safe_load(f)
     return dict_file_param
 
-def read_hdf5(param):
-    hdf5_file = param["dataset_dir"] + param["input_file"]
-    if os.path.exists(hdf5_file):
-        fr = h5py.File(hdf5_file, 'r')
-        param['alpha'] = fr['mc_real_parameters'].attrs['alpha']
-        param['beta'] = fr['mc_real_parameters'].attrs['beta']
-        param['mu'] = fr['mc_real_parameters'].attrs['mu']
-        param['n'] = fr['mc_real_parameters'].attrs['n']
-        param['t'] = fr['mc_real_parameters'].attrs['t']
+
+def read_dataset(param):
+    input_dir = param["dataset_dir"] + param["input"]+"/"
+    json_file = input_dir+"param.json"
+
+    if os.path.exists(json_file):
+        param_from_file = json_reader(json_file)
+        param['alpha'] = param_from_file['alpha'] 
+        param['beta'] = param_from_file['beta'] 
+        param['mu'] = param_from_file['mu']    
+        param['n'] = param_from_file['n']   
+        param['t'] = param_from_file['t']
 
         mc_dataset = dataset.init_dataset(param)
 
         id_local = 0
-        print(fr.keys())
+        
         for id in mc_dataset['id']:
-            k = "mc_sim_" + str(id)
+            hdf5_file = input_dir+"mc_dataset_"+str(id)+".hdf5"
+            fr = h5py.File(hdf5_file, 'r')
+            k = "mc_sim" 
             t = (fr[k][:])
             mc_dataset['t'].append(t)
             a=fr[k].attrs['alpha']
@@ -43,6 +69,8 @@ def read_hdf5(param):
             m=fr[k].attrs['mu']
             mc_dataset['mu'][id_local] = m
             id_local += 1
+            
         return mc_dataset
+
     else:
         print('ERROR: input_file does not exist')

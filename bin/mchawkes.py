@@ -31,8 +31,8 @@ if rank==0:
 param = comm.bcast(file_param, root=0)
 param["rank"] = rank
 
-if ("bt" in param["execution"] or "plt" in param["execution"]) and "input_file" in param:
-    dataset = reader.read_hdf5(param)
+if ("bt" in param["execution"] or "plt" in param["execution"]) and "input" in param:
+    dataset = reader.read_dataset(param)
     print(dataset)
     print(param)
 else:
@@ -47,7 +47,7 @@ if "mc" in param["execution"]:
 if "save" in param["execution"]:
     from lib.inout import writer
     comm.Barrier()
-    writer.save_hdf5(param, dataset)
+    writer.save_dataset(param, dataset)
 
 
     

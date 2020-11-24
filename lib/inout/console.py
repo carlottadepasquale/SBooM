@@ -11,7 +11,7 @@ def init():
     parser.add_argument('--seed', help='seed for the Hawkes process simulator')
     parser.add_argument('-e','--execution', nargs='+', help='type of execution')
     parser.add_argument('--dataset_dir', help='where to save the dataset')
-    parser.add_argument('--input_file', help='name of the dataset')
+    parser.add_argument('--input', help='name of the dataset')
     argn = parser.parse_args()
     console_param = {}
     if argn.number_of_interations:
@@ -38,7 +38,7 @@ def init():
     if argn.dataset_dir:
         dir = argn.dataset_dir
         console_param["dataset_dir"] = dir
-    if argn.input_file:
-        name = argn.input_file
-        console_param["input_file"] = name
+    if argn.input:
+        name = argn.input
+        console_param["input"] = name
     return console_param

@@ -7,28 +7,66 @@ from mpi4py import MPI
 import h5py
 import numpy as np
 import logging
+import json
+import os
 
-#write file
-def save_hdf5(param, dataset):
+def json_writer(filepath,json_dict):
+    """
+    Write json file
+    """
+
+    with open(filepath, 'w') as json_file:
+        json.dump(json_dict, json_file, sort_keys=True, indent=4)
+
+def save_dataset(param, dataset):
+    """
+    Write the dataset object on file system:
+
+     -param.json : contains param object
+     -mc_dataset .hdf5 : contains timeline,alpha,beta,mu for each simulation
+
+    """
+
     logger=logging.getLogger(param["logger"])
-    filename = param['dataset_dir'] + param['outprefix'] + "_" + str(param['n']) + "_" + str(param['t']) + ".hdf5"
-    logger.info(filename)
-    fw = h5py.File(filename, "w", driver='mpio', comm=MPI.COMM_WORLD)
+    dir_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['n']) + "_" + str(param['t'])+"/"
+    logger.info(dir_name)
 
-    group = fw.create_group("mc_real_parameters")
-    group.attrs['n'] = param['n']
-    group.attrs['t'] = param['t']
-    group.attrs['alpha'] = param['alpha']
-    group.attrs['beta'] = param['beta']
-    group.attrs['mu'] = param['mu']
+    os.makedirs(dir_name,  exist_ok=True)
+    #write json file with param
+    if param["rank"] == 0:
+        json_file = dir_name+"param.json"
+        json_writer(json_file,param)
 
-    dset_a = fw.create_dataset("alpha" , (param['n'],), dtype ='f')
-    dset_b = fw.create_dataset("beta" , (param['n'],), dtype ='f')
-    dset_m = fw.create_dataset("mu" , (param['n'],), dtype ='f')
+
+    count = 0 #i in dataset id va fino a n (id globale), ci serve una variabile che ci dia l'id locale
+    for i in dataset['id']:
+        hdf5_file = dir_name+"mc_dataset_"+str(i)+".hdf5"
+        fw = h5py.File(hdf5_file, "w")
+        t = dataset['t'][count]
+        dset_i = fw.create_dataset("mc_sim", data = t , dtype ='i')
+        dset_i.attrs['alpha'] = dataset['alpha'][count]
+        dset_i.attrs['beta'] = dataset['beta'][count]
+        dset_i.attrs['mu'] = dataset['mu'][count]
+        count +=1
     
-    dset_a[dataset['id']] = dataset['alpha']
-    dset_b[dataset['id']] = dataset['beta']
-    dset_m[dataset['id']] = dataset['mu']
+    fw.close()
+
+
+    # fw.atomic = True
+    # group = fw.create_group("mc_real_parameters")
+    # group.attrs['n'] = param['n']
+    # group.attrs['t'] = param['t']
+    # group.attrs['alpha'] = param['alpha']
+    # group.attrs['beta'] = param['beta']
+    # group.attrs['mu'] = param['mu']
+
+    # dset_a = fw.create_dataset("alpha" , (param['n'],), dtype ='f')
+    # dset_b = fw.create_dataset("beta" , (param['n'],), dtype ='f')
+    # dset_m = fw.create_dataset("mu" , (param['n'],), dtype ='f')
+    
+    # dset_a[dataset['id']] = dataset['alpha']
+    # dset_b[dataset['id']] = dataset['beta']
+    # dset_m[dataset['id']] = dataset['mu']
     # dset_list = []
     # for i in range(len(dataset['t'])):
     #     # print("dataset[t]: ", type(dataset['t'][i]), dataset['t'][i].shape)
@@ -68,14 +106,5 @@ def save_hdf5(param, dataset):
 
     
     
-    # # count = 0 #i in dataset id va fino a n (id globale), ci serve una variabile che ci dia l'id locale
-    # # for i in dataset['id']:
-    # #     t = dataset['t'][count]
-    # #     dset_i = fw.create_dataset("mc_sim_"+ str(i), data = t , dtype ='i')
-    # #     dset_i.attrs['alpha'] = dataset['alpha'][count]
-    # #     dset_i.attrs['beta'] = dataset['beta'][count]
-    # #     dset_i.attrs['mu'] = dataset['mu'][count]
-    # #     count +=1
-    
-    fw.close()
+
     
