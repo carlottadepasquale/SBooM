@@ -18,17 +18,27 @@ def simulator(param, dataset):
         np.random.seed(param["rank"] + t)
     i_local = 0
     for i in dataset['id']:
+
+        t_sim0 = MPI.Wtime()
         hsim = hawkes(param)
+        t_sim += MPI.Wtime() - t_sim0
+
+        t_est0 = MPI.Wtime()
         estimate = inference(i, hsim, param)
+        t_est += MPI.Wtime() - t_est0
+
         dataset['t'].append(hsim)
         dataset['alpha'][i_local] = estimate['alpha']
         dataset['beta'][i_local] = estimate['beta']
         dataset['mu'][i_local] = estimate['mu']
         i_local += 1
+    print("Avg time Hawkes: ", t_sim/i_local)
+    print("Avg time inference: ", t_est/i_local)
     
     
 def hawkes(param):
     
+
     adjacency = np.array([[param['alpha']]])
     decay = np.array([[param['beta']]])
     baseline = np.array([param['mu']])
@@ -56,7 +66,7 @@ def inference(i, hsim, param):
     log_output += "branching ratio: " + str(model.br) + "\n" # the branching ratio
     log_output += "log-likelihood:" + str(model.L) + "\n" # the log-likelihood of the estimated parameter values
     logger=logging.getLogger(param["logger"])
-    logger.info(log_output)
+    logger.debug(log_output)
     return model.parameter
     # # T_trans: a list of transformed event occurrence times, itv_trans: the transformed observation interval
     # [T_trans, itv_trans] = model.t_trans() 

@@ -19,7 +19,7 @@ def json_reader(filepath):
     jfc = "-999"
     try:
         if os.path.isfile(filepath) :
-            jfc = json.loads(open(filepath).read())
+            jfc = json.loads(open(filepath).read()) #legge il contenuto del file e lo trasforma in un dizionario
         else :
             sys.exit()
 
@@ -59,7 +59,7 @@ def read_dataset(param):
         for id in mc_dataset['id']:
             hdf5_file = input_dir+"mc_dataset_"+str(id)+".hdf5"
             fr = h5py.File(hdf5_file, 'r')
-            k = "mc_sim" 
+            k = "mc_sim" #nome del dataset hdf5
             t = (fr[k][:])
             mc_dataset['t'].append(t)
             a=fr[k].attrs['alpha']

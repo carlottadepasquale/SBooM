@@ -29,9 +29,10 @@ def save_dataset(param, dataset):
 
     logger=logging.getLogger(param["logger"])
     dir_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['n']) + "_" + str(param['t'])+"/"
-    logger.info(dir_name)
+    if param["rank"] == 0:
+        logger.info(dir_name)
 
-    os.makedirs(dir_name,  exist_ok=True)
+    os.makedirs(dir_name,  exist_ok=True) #se esiste già non è un problema ma non sovrascrive
     #write json file with param
     if param["rank"] == 0:
         json_file = dir_name+"param.json"
@@ -43,7 +44,7 @@ def save_dataset(param, dataset):
         hdf5_file = dir_name+"mc_dataset_"+str(i)+".hdf5"
         fw = h5py.File(hdf5_file, "w")
         t = dataset['t'][count]
-        dset_i = fw.create_dataset("mc_sim", data = t , dtype ='i')
+        dset_i = fw.create_dataset("mc_sim", data = t , dtype ='f')
         dset_i.attrs['alpha'] = dataset['alpha'][count]
         dset_i.attrs['beta'] = dataset['beta'][count]
         dset_i.attrs['mu'] = dataset['mu'][count]

@@ -6,6 +6,7 @@ import logging
 from mpi4py import MPI
 import yaml
 import os
+import time
 
 from lib.inout import console
 from lib.inout import reader
@@ -16,6 +17,8 @@ comm = MPI.COMM_WORLD #setta il comunicatore: tutti parlano con tutti
 size = comm.Get_size() #dice quanti processori stanno lavorando
 rank = comm.Get_rank() #assegna il rank
 file_param = {}
+
+tts0 = MPI.Wtime()
 
 log.logger_init(rank, "basic")
 logger=logging.getLogger('basic')
@@ -31,26 +34,40 @@ if rank==0:
 param = comm.bcast(file_param, root=0)
 param["rank"] = rank
 
+tread0 = MPI.Wtime()
 if ("bt" in param["execution"] or "plt" in param["execution"]) and "input" in param:
     dataset = reader.read_dataset(param)
-    print(dataset)
-    print(param)
+
 else:
     dataset = dataset.init_dataset(param)
+tread = MPI.Wtime() - tread0
 
+tmc0 = MPI.Wtime()
 if "mc" in param["execution"]:
     from lib.simulator import mcgen
-    #logger.info('Monte Carlo')
     mcgen.simulator(param, dataset)
+tmc = MPI.Wtime() - tmc0
 
-
+tsave0 = MPI.Wtime()
 if "save" in param["execution"]:
     from lib.inout import writer
     comm.Barrier()
     writer.save_dataset(param, dataset)
+tsave = MPI.Wtime() - tsave0
+
+tts = MPI.Wtime() - tts0
+
+if rank==0:
+    logger.critical("MPI Size: "+ str(size))
+    logger.critical("Number of iterations: "+ str(param["n"]))
+    logger.critical("Time: "+ str(param["t"]))
+    logger.critical("Time to solution: "+ str(tts)) 
+    logger.critical("Reader time: "+ str(tread)) 
+    logger.critical("Montecarlo time: "+ str(tmc)) 
+    logger.critical("Save time: "+ str(tsave)) 
 
 
-    
+
 
 
 #get parametri da console 
