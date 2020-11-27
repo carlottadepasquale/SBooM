@@ -65,7 +65,7 @@ if rank==0:
     logger.critical("Reader time: "+ str(tread)) 
     logger.critical("Montecarlo time: "+ str(tmc)) 
     logger.critical("Save time: "+ str(tsave)) 
-logger.critical(dataset['id'])
+
 
 
 
