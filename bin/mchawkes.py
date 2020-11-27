@@ -45,7 +45,7 @@ tread = MPI.Wtime() - tread0
 tmc0 = MPI.Wtime()
 if "mc" in param["execution"]:
     from lib.simulator import mcgen
-    mcgen.simulator(param, dataset)
+    mcgen.simulator(param, dataset, comm)
 tmc = MPI.Wtime() - tmc0
 
 tsave0 = MPI.Wtime()
