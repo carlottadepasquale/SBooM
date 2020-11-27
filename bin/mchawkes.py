@@ -60,7 +60,7 @@ tts = MPI.Wtime() - tts0
 if rank==0:
     logger.critical("MPI Size: "+ str(size))
     logger.critical("Number of iterations: "+ str(param["n"]))
-    logger.critical("Time: "+ str(param["t"]))
+    logger.critical("Hawkes T: "+ str(param["t"]))
     logger.critical("Time to solution: "+ str(tts)) 
     logger.critical("Reader time: "+ str(tread)) 
     logger.critical("Montecarlo time: "+ str(tmc)) 
