@@ -28,7 +28,8 @@ def save_dataset(param, dataset):
     """
 
     logger=logging.getLogger(param["logger"])
-    dir_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['n']) + "_" + str(param['t'])+"/"
+    dir_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
+    dir_name = dir_name + "N_" + str(param['n']) + "_T_" + str(param['t']) + "/"
     if param["rank"] == 0:
         logger.info(dir_name)
 
@@ -37,7 +38,6 @@ def save_dataset(param, dataset):
     if param["rank"] == 0:
         json_file = dir_name+"param.json"
         json_writer(json_file,param)
-
 
     count = 0 #i in dataset id va fino a n (id globale), ci serve una variabile che ci dia l'id locale
     for i in dataset['id']:

@@ -1,8 +1,8 @@
-n: 50
+n: 10
 mu: 0.5
-alpha: 0.4
+alpha: 0.8
 beta: 5
-t: 1000
+t: 100
 execution: 
   - "mc"
   - "save"
@@ -11,4 +11,4 @@ execution:
   - "bt"
 dataset_dir: "/home/carlottade/Dataset_hdf5/"
 outprefix: "mc_dataset"
-input: "mc_dataset_10_10.hdf5"
+input: "mc_dataset_0.5_0.8_5/N_10_T_100"
