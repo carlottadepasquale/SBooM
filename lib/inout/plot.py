@@ -31,7 +31,7 @@ def plot_estimate(param, dataset, comm):
             count[c] = dataset['n_local']
             displ[c] = dataset['id'][0]
             c += 1
-        print(param['rank'], ' count: ', count, ' displ: ', displ)
+        #print(param['rank'], ' count: ', count, ' displ: ', displ)
 
 
     comm.Gather(dataset['alpha'], alpha_all, root = 0)
@@ -39,7 +39,7 @@ def plot_estimate(param, dataset, comm):
     comm.Gather(dataset['mu'], mu_all, root = 0)
     
     if param['rank'] == 0:
-        print("alpha_all: ", alpha_all)
+        #print("alpha_all: ", alpha_all)
         sns.distplot(alpha_all, hist=False, kde=True, color = 'darkblue', kde_kws={'linewidth': 4})
         plt.show()
 

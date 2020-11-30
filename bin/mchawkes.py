@@ -59,8 +59,6 @@ if "plt" in param["execution"]:
     from lib.inout import plot
     plot.plot_estimate(param, dataset, comm)
 
-print("alpha: ", dataset['alpha'])
-
 tts = MPI.Wtime() - tts0
 
 if rank==0:
