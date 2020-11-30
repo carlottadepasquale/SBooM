@@ -24,7 +24,7 @@ def init():
         a = float(argn.intensity)
         console_param["alpha"] = a
     if argn.beta:
-        d = float(argn.beta)
+        b = float(argn.beta)
         console_param["beta"] = b
     if argn.time:
         t = float(argn.time)
