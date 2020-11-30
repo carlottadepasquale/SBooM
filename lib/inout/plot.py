@@ -39,8 +39,16 @@ def plot_estimate(param, dataset, comm):
     comm.Gather(dataset['mu'], mu_all, root = 0)
     
     if param['rank'] == 0:
-        #print("alpha_all: ", alpha_all)
-        sns.distplot(alpha_all, hist=False, kde=True, color = 'darkblue', kde_kws={'linewidth': 4})
-        plt.show()
+        aplt = sns.distplot(alpha_all, hist=False, kde=True, color = 'darkblue', kde_kws={'linewidth': 4})
+        afig = aplt.get_figure()
+        afig.savefig('alphasb.png')
+        # plt.savefig("alpha.png")
+        bplt = sns.distplot(beta_all, hist=False, kde=True, color = 'g', kde_kws={'linewidth': 4})
+        bfig = bplt.get_figure()
+        bfig.savefig('betasb.png')
+        # plt.savefig("beta.png")
+        # sns.distplot(mu_all, hist=False, kde=True, color = 'm', kde_kws={'linewidth': 4})
+        # plt.savefig("mu.png")
+        #plot_alpha.savefig("alpha.png")
 
     

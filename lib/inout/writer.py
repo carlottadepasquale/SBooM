@@ -29,7 +29,7 @@ def save_dataset(param, dataset):
 
     logger=logging.getLogger(param["logger"])
     dir_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
-    dir_name = dir_name + "N_" + str(param['n']) + "_T_" + str(param['t']) + "/"
+    dir_name = dir_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/"
     if param["rank"] == 0:
         logger.info(dir_name)
 
