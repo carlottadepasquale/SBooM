@@ -44,13 +44,16 @@ def plot_estimate(param, dataset, comm):
         est_par = {'alpha': alpha_all, 'beta': beta_all, 'mu': mu_all}
         df = pd.DataFrame(est_par, columns=['alpha', 'beta', 'mu'])
         fig, ax =plt.subplots(1,3)
+        plt.subplots_adjust(wspace = 0.35)
         a = sns.histplot(df['alpha'], ax=ax[0])
         b = sns.histplot(df['beta'], ax=ax[1])
         m = sns.histplot(df['mu'], ax=ax[2])
         a.set_title('alpha')
         b.set_title('beta')
         m.set_title('mu')
-        fig.savefig('allplts.png')
+        plt_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
+        plt_name = plt_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" + "allplts.png"
+        fig.savefig(plt_name)
         #aplt = sns.displot(alpha_all, kind='hist')
         # #sns.distplot(alpha_all, hist=False, kde=True, color = 'darkblue', kde_kws={'linewidth': 4})
         # aplt.savefig('alphah.png')
