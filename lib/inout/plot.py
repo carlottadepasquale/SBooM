@@ -5,8 +5,7 @@
 
 from lib import Hawkes as hk
 import numpy as np
-# import matplotlib
-# matplotlib.use('TkAgg')
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
@@ -23,32 +22,46 @@ def plot_estimate(param, dataset, comm):
     beta_all = np.zeros(param['n'])
     mu_all = np.zeros(param['n'])
     
-    if param['rank']==0: 
-        count = np.zeros(param['size'])
-        displ = np.zeros(param['size'])
+    count = np.zeros(param['size'])
+    displ = np.zeros(param['size'])
+    
+    if param['rank']==0:
         c = 0
+        r = 0
         for i in range(param['size']):
             count[c] = dataset['n_local']
-            displ[c] = dataset['id'][0]
+            displ[c] = dataset['n_local'] * r
             c += 1
-        #print(param['rank'], ' count: ', count, ' displ: ', displ)
-
-
-    comm.Gather(dataset['alpha'], alpha_all, root = 0)
-    comm.Gather(dataset['beta'], beta_all, root = 0)
-    comm.Gather(dataset['mu'], mu_all, root = 0)
+            r += 1
+        count[param['size'] - 1] = dataset['n_local'] + (param['n'] % param['size'])
+        print(param['rank'], ' count: ', count, ' displ: ', displ)
     
+    comm.Gatherv(dataset['alpha'], [alpha_all, count, displ, MPI.DOUBLE], root = 0)
+    comm.Gatherv(dataset['beta'], [beta_all, count, displ, MPI.DOUBLE], root = 0)
+    comm.Gatherv(dataset['mu'], [mu_all, count, displ, MPI.DOUBLE], root = 0)
+
     if param['rank'] == 0:
-        aplt = sns.distplot(alpha_all, hist=False, kde=True, color = 'darkblue', kde_kws={'linewidth': 4})
-        afig = aplt.get_figure()
-        afig.savefig('alphasb.png')
-        # plt.savefig("alpha.png")
-        bplt = sns.distplot(beta_all, hist=False, kde=True, color = 'g', kde_kws={'linewidth': 4})
-        bfig = bplt.get_figure()
-        bfig.savefig('betasb.png')
-        # plt.savefig("beta.png")
-        # sns.distplot(mu_all, hist=False, kde=True, color = 'm', kde_kws={'linewidth': 4})
-        # plt.savefig("mu.png")
-        #plot_alpha.savefig("alpha.png")
+        est_par = {'alpha': alpha_all, 'beta': beta_all, 'mu': mu_all}
+        df = pd.DataFrame(est_par, columns=['alpha', 'beta', 'mu'])
+        fig, ax =plt.subplots(1,3)
+        a = sns.histplot(df['alpha'], ax=ax[0])
+        b = sns.histplot(df['beta'], ax=ax[1])
+        m = sns.histplot(df['mu'], ax=ax[2])
+        a.set_title('alpha')
+        b.set_title('beta')
+        m.set_title('mu')
+        fig.savefig('allplts.png')
+        #aplt = sns.displot(alpha_all, kind='hist')
+        # #sns.distplot(alpha_all, hist=False, kde=True, color = 'darkblue', kde_kws={'linewidth': 4})
+        # aplt.savefig('alphah.png')
+        # plt.clf()
+        # bplt = sns.displot(beta_all, kind='hist')
+        # #sns.distplot(beta_all, hist=False, kde=True, color = 'g', kde_kws={'linewidth': 4})
+        # bplt.savefig('betah.png')
+        # plt.clf()
+        # mplt = sns.displot(mu_all, kind='hist')
+        # #sns.distplot(mu_all, hist=False, kde=True, color = 'm', kde_kws={'linewidth': 4})
+        # mplt.savefig("muh.png")
+        
 
     
