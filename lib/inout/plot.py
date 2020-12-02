@@ -41,14 +41,13 @@ def plot_estimate(param, dataset, comm):
     comm.Gatherv(dataset['mu'], [mu_all, count, displ, MPI.DOUBLE], root = 0)
 
     if param['rank'] == 0:
-        est_par = {'alpha': alpha_all, 'beta': beta_all, 'mu': mu_all}
-        df = pd.DataFrame(est_par, columns=['alpha', 'beta', 'mu'])
+        # est_par = {'alpha': alpha_all, 'beta': beta_all, 'mu': mu_all}
+        # df = pd.DataFrame(est_par, columns=['alpha', 'beta', 'mu'])
         fig, ax =plt.subplots(1,3)
         plt.subplots_adjust(wspace = 0.35)
-        a = sns.histplot(df['alpha'], ax=ax[0])
-        #a.plt.axvline(param['alpha'], color='red')
-        b = sns.histplot(df['beta'], ax=ax[1])
-        m = sns.histplot(df['mu'], ax=ax[2])
+        a = sns.histplot(alpha_all, ax=ax[0])
+        b = sns.histplot(beta_all, ax=ax[1])
+        m = sns.histplot(mu_all, ax=ax[2])
         vlines = [param['alpha'], param['beta'], param['mu']]
         v=0
         for ax in fig.axes:
@@ -60,6 +59,7 @@ def plot_estimate(param, dataset, comm):
         plt_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
         plt_name = plt_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" + "allplts.png"
         fig.savefig(plt_name)
+        print("Plot saved in ", plt_name)
         #aplt = sns.displot(alpha_all, kind='hist')
         # #sns.distplot(alpha_all, hist=False, kde=True, color = 'darkblue', kde_kws={'linewidth': 4})
         # aplt.savefig('alphah.png')
