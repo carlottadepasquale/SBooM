@@ -46,8 +46,14 @@ def plot_estimate(param, dataset, comm):
         fig, ax =plt.subplots(1,3)
         plt.subplots_adjust(wspace = 0.35)
         a = sns.histplot(df['alpha'], ax=ax[0])
+        #a.plt.axvline(param['alpha'], color='red')
         b = sns.histplot(df['beta'], ax=ax[1])
         m = sns.histplot(df['mu'], ax=ax[2])
+        vlines = [param['alpha'], param['beta'], param['mu']]
+        v=0
+        for ax in fig.axes:
+            ax.axvline(vlines[v], color='red')
+            v += 1
         a.set_title('alpha')
         b.set_title('beta')
         m.set_title('mu')
