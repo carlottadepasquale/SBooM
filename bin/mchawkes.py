@@ -1,13 +1,13 @@
 #!/usr/bin/env python3        
 
 #così sa già che deve usare python per eseguirlo, non devo più scrivere python3 genhawkes
-from lib.inout import log
 import logging
 from mpi4py import MPI
 import yaml
 import os
 import time
 
+from lib.inout import log
 from lib.inout import console
 from lib.inout import reader
 from lib.simulator import dataset
@@ -30,7 +30,8 @@ if rank==0:
     file_param.update(console_param)
     file_param["size"] = size
     file_param["logger"] = "basic"
-    
+
+
 param = comm.bcast(file_param, root=0)
 param["rank"] = rank
 
@@ -55,6 +56,12 @@ if "save" in param["execution"]:
     writer.save_dataset(param, dataset)
 tsave = MPI.Wtime() - tsave0
 
+tbt0 = MPI.Wtime()
+if "bt" in param["execution"]:
+    from lib.simulator import bootstrap
+    bootstrap.bootstrap(param, dataset, comm)
+tbt = MPI.Wtime() - tbt0
+
 if "plt" in param["execution"]:
     from lib.inout import plot
     plot.plot_estimate(param, dataset, comm)
@@ -68,6 +75,7 @@ if rank==0:
     logger.critical("Time to solution: "+ str(tts)) 
     logger.critical("Reader time: "+ str(tread)) 
     logger.critical("Montecarlo time: "+ str(tmc)) 
+    logger.critical("Bootstrap time: "+ str(tbt)) 
     logger.critical("Save time: "+ str(tsave)) 
 
 

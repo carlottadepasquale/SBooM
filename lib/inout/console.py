@@ -8,6 +8,7 @@ def init():
     parser.add_argument('-a','--intensity', help='alpha, intensity of the process')
     parser.add_argument('-b','--beta', help='beta, decay of the process')
     parser.add_argument('-t','--time', help='time of the process')
+    parser.add_argument('-bt','--bootstrap', help='the number of bootstrap iterations of the process')
     parser.add_argument('--seed', help='seed for the Hawkes process simulator')
     parser.add_argument('-e','--execution', nargs='+', help='type of execution')
     parser.add_argument('--dataset_dir', help='where to save the dataset')
@@ -29,6 +30,9 @@ def init():
     if argn.time:
         t = float(argn.time)
         console_param["t"] = t
+    if argn.bootstrap:
+        bt = int(argn.bootstrap)
+        console_param["bt"] =bt
     if argn.seed:
         s = int(argn.seed)
         console_param["seed"] = s

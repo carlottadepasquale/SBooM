@@ -43,6 +43,13 @@ def plot_estimate(param, dataset, comm):
     if param['rank'] == 0:
         # est_par = {'alpha': alpha_all, 'beta': beta_all, 'mu': mu_all}
         # df = pd.DataFrame(est_par, columns=['alpha', 'beta', 'mu'])
+        max_alpha = np.max(alpha_all)
+        min_alpha = np.min(alpha_all)
+        min_beta = np.min(beta_all)
+        min_mu = np.min(mu_all)
+        print("Alpha max: ", max_alpha)
+        print("Alpha, beta, mu min: ", min_alpha, min_beta, min_mu)
+        
         fig, ax =plt.subplots(1,3)
         plt.subplots_adjust(wspace = 0.35)
         a = sns.histplot(alpha_all, ax=ax[0])

@@ -73,7 +73,6 @@ def hawkes(param):
     model.set_parameter(par)
     interval = [0,t]
     hsim = model.simulate(interval)
-    
         
     return hsim
 
@@ -81,7 +80,7 @@ def inference(i, hsim, param):
     model = hk.estimator().set_kernel('exp',num_exp=1).set_baseline('const')
     t = int(param['t'])
     interval = [0,t]
-    model.fit(hsim, interval)
+    model.fit(hsim, interval) #, opt=["ste", "check", "print"]
     return model
     # # T_trans: a list of transformed event occurrence times, itv_trans: the transformed observation interval
     # [T_trans, itv_trans] = model.t_trans() 
