@@ -26,11 +26,22 @@ def simulator(param, dataset, comm):
     t_est = np.zeros(1)
     total_sim = np.zeros(1)
     total_est = np.zeros(1)
+    mu_ok = np.zeros(1)
+    alpha_ok = np.zeros(1)
+    beta_ok = np.zeros(1)
+    n_events = np.zeros(1)
+    mu_ok_tot = np.zeros(1)
+    alpha_ok_tot = np.zeros(1)
+    beta_ok_tot = np.zeros(1)
+    n_events_tot = np.zeros(1)
+
     for i in dataset['id']:
 
         t_sim0 = MPI.Wtime()
         hsim = hawkes(param)
         t_sim[0] += MPI.Wtime() - t_sim0
+        n_events[0] += len(hsim)
+
 
         t_est0 = MPI.Wtime()
         model = inference(i, hsim, param)
@@ -46,7 +57,29 @@ def simulator(param, dataset, comm):
         dataset['alpha'][i_local] = model.parameter['alpha']
         dataset['beta'][i_local] = model.parameter['beta']
         dataset['mu'][i_local] = model.parameter['mu']
+        dataset['stderr'].append(model.stderr)
+        
+        mu_upper_lim = dataset['mu'][i_local]+1.96*dataset['stderr'][i_local][0]
+        mu_lower_lim = dataset['mu'][i_local]-1.96*dataset['stderr'][i_local][0]
+
+        alpha_upper_lim = dataset['alpha'][i_local]+1.96*dataset['stderr'][i_local][1]
+        alpha_lower_lim = dataset['alpha'][i_local]-1.96*dataset['stderr'][i_local][1]
+
+        beta_upper_lim = dataset['beta'][i_local]+1.96*dataset['stderr'][i_local][2]
+        beta_lower_lim = dataset['beta'][i_local]-1.96*dataset['stderr'][i_local][2]
+        
+        if (mu_upper_lim >= param['mu'] and mu_lower_lim <= param['mu']):
+            mu_ok[0] += 1
+        if (alpha_upper_lim >= param['alpha'] and alpha_lower_lim <= param['alpha']):
+            alpha_ok[0] += 1
+        if (beta_upper_lim >= param['beta'] and beta_lower_lim <= param['beta']):
+            beta_ok[0] += 1
         i_local += 1
+
+    comm.Reduce(mu_ok, mu_ok_tot, op=MPI.SUM, root=0)
+    comm.Reduce(alpha_ok, alpha_ok_tot, op=MPI.SUM, root=0)
+    comm.Reduce(beta_ok, beta_ok_tot, op=MPI.SUM, root=0)
+    comm.Reduce(n_events, n_events_tot, op=MPI.SUM, root=0)    
     
     avg_t_sim_loc = t_sim/i_local
     avg_t_est_loc = t_est/i_local
@@ -55,6 +88,15 @@ def simulator(param, dataset, comm):
     comm.Reduce(avg_t_est_loc, total_est, op=MPI.SUM, root=0)
 
     if param['rank'] == 0:
+        print('mu_ok: ', 100*mu_ok_tot/param['n'], '%')
+        print('alpha_ok: ', 100*alpha_ok_tot/param['n'], '%')
+        print('beta_ok: ', 100*beta_ok_tot/n, '%')
+        avg_n_events_p = n_events_tot / n
+        avg_n_events_t = param['mu']*param['t']/(1-param['alpha'])
+
+        print('theorical avg n of events: ', avg_n_events_t)
+        print('avg n of events: ', avg_n_events_p)
+
         avg_t_sim = total_sim[0]/param['size']
         avg_t_est = total_est[0]/param['size']
         logger.info("Avg time Hawkes: " + str(avg_t_sim) +"  " + "Avg time inference: "+ str(avg_t_est))
@@ -81,8 +123,8 @@ def inference(i, hsim, param):
     t = int(param['t'])
     interval = [0,t]
     model.fit(hsim, interval)  #,  opt=["ste", "print"])  #, "check"])
-    stderr = model.stderr
-    print('Std Error: ', stderr)
+    # stderr = model.stderr
+    # print('Std Error: ', stderr)
     return model
     # # T_trans: a list of transformed event occurrence times, itv_trans: the transformed observation interval
     # [T_trans, itv_trans] = model.t_trans() 
