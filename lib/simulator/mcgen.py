@@ -80,7 +80,9 @@ def inference(i, hsim, param):
     model = hk.estimator().set_kernel('exp',num_exp=1).set_baseline('const')
     t = int(param['t'])
     interval = [0,t]
-    model.fit(hsim, interval) #, opt=["ste", "check", "print"]
+    model.fit(hsim, interval)  #,  opt=["ste", "print"])  #, "check"])
+    stderr = model.stderr
+    print('Std Error: ', stderr)
     return model
     # # T_trans: a list of transformed event occurrence times, itv_trans: the transformed observation interval
     # [T_trans, itv_trans] = model.t_trans() 

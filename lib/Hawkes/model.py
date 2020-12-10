@@ -154,8 +154,9 @@ class estimator(base_class):
         stg = merge_stg([stg_b,stg_k])
         self.stg = stg
 
-        [para,L,ste,G_norm,i_loop] = Quasi_Newton(self,prior,merge,opt)
+        [para,L,ste,G_norm,i_loop, stderr] = Quasi_Newton(self,prior,merge,opt)
 
+        self.stderr = stderr
         self.para = para
         self.parameter = para
         self.L = L
