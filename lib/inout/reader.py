@@ -129,6 +129,7 @@ def read_dataset(param):
             for f in map_files:
 
                 hdf5_file = input_dir+"mc_dataset_"+str(f)+".hdf5"
+                #print(f,count_idx, hdf5_file)
                 fr = h5py.File(hdf5_file, 'r')
 
                 # loop on index range 
@@ -136,7 +137,7 @@ def read_dataset(param):
 
                     # loop on id in the range
                 for id in id_per_file[count_idx]:
-
+                   
                     k = "mc_sim_"+str(id) #nome del dataset hdf5
                     t = (fr[k][:])
                     mc_dataset['t'].append(t)
@@ -147,8 +148,11 @@ def read_dataset(param):
                     m=fr[k].attrs['mu']
                     mc_dataset['mu'][id_local] = m
                     id_local += 1
+                   
+                        #print("exc!",id,f)
                 
-                count_idx =+ 1
+                fr.close()
+                count_idx += 1
 
         #print(param["rank"], mc_dataset)
 
