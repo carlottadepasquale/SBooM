@@ -3,10 +3,12 @@ import numpy as np
 def init_dataset(param):
     mc_dataset = {}
     mc_dataset['rank'] = param["rank"]
-    mc_dataset['rank_map'] =  get_rank_map(param)  #i_end e i_start di ogni processore
-    i_start = mc_dataset['rank_map'][param['rank']]['i_start'] 
-    i_end = mc_dataset['rank_map'][param['rank']]['i_end']
-    n_local = i_end - i_start
+    
+    rank_map,n_local,id_array = id_map(param["rank"],param["size"],param["n"])
+
+    mc_dataset['rank_map'] = rank_map 
+    mc_dataset['id'] = id_array 
+    
     mc_dataset['alpha'] = np.empty(n_local)
     mc_dataset['beta'] = np.empty(n_local)
     mc_dataset['mu'] = np.empty(n_local)
@@ -14,19 +16,26 @@ def init_dataset(param):
     mc_dataset['t'] = []
     mc_dataset['n_it'] = param['n']
     mc_dataset['n_local'] = n_local
-    mc_dataset['id'] = np.arange(i_start, i_end )
     mc_dataset['bootstrap'] = []
     return mc_dataset
 
-def get_rank_map(param):
-    n = param["n"]
-    size = param["size"]
+def id_map(rank,size,n):
+
+    rank_map =  get_rank_map(size,n)  
+    i_start = rank_map[rank]['i_start'] 
+    i_end = rank_map[rank]['i_end']
+    n_local = i_end - i_start
+    id_array = np.arange(i_start, i_end )
+    return [rank_map,n_local,id_array]
+
+def get_rank_map(size,n):
+    
     rank_map = []
     for r in range(size):
-        iterations = param["n"]//param["size"]
+        iterations = n//size
         i_start = r * iterations
         i_end = i_start + iterations
-        if param["rank"] == param["size"]-1:
-            i_end +=  param["n"]%param["size"]
+        if r == size-1:
+            i_end += n%size
         rank_map.append({'i_start': i_start, 'i_end': i_end})
     return rank_map

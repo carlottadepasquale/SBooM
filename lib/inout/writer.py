@@ -40,11 +40,11 @@ def save_dataset(param, dataset):
         json_writer(json_file,param)
 
     count = 0 #i in dataset id va fino a n (id globale), ci serve una variabile che ci dia l'id locale
+    hdf5_file = dir_name+"mc_dataset_"+str(param["rank"])+".hdf5"
+    fw = h5py.File(hdf5_file, "w")
     for i in dataset['id']:
-        hdf5_file = dir_name+"mc_dataset_"+str(i)+".hdf5"
-        fw = h5py.File(hdf5_file, "w")
         t = dataset['t'][count]
-        dset_i = fw.create_dataset("mc_sim", data = t , dtype ='f')
+        dset_i = fw.create_dataset("mc_sim_"+str(i), data = t , dtype ='f')
         dset_i.attrs['alpha'] = dataset['alpha'][count]
         dset_i.attrs['beta'] = dataset['beta'][count]
         dset_i.attrs['mu'] = dataset['mu'][count]
