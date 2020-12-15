@@ -47,8 +47,8 @@ def plot_estimate(param, dataset, comm):
         min_alpha = np.min(alpha_all)
         min_beta = np.min(beta_all)
         min_mu = np.min(mu_all)
-        print("Alpha max: ", max_alpha)
-        print("Alpha, beta, mu min: ", min_alpha, min_beta, min_mu)
+        logger.debug("Alpha max: " + str(max_alpha))
+        logger.debug("Alpha, beta, mu min: " + str(min_alpha) + str(min_beta) + str(min_mu))
         
         fig, ax =plt.subplots(1,3)
         plt.subplots_adjust(wspace = 0.35)
@@ -66,7 +66,7 @@ def plot_estimate(param, dataset, comm):
         plt_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
         plt_name = plt_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" + "allplts.png"
         fig.savefig(plt_name)
-        print("Plot saved in ", plt_name)
+        logger.info("Plot saved in " + str(plt_name))
         #aplt = sns.displot(alpha_all, kind='hist')
         # #sns.distplot(alpha_all, hist=False, kde=True, color = 'darkblue', kde_kws={'linewidth': 4})
         # aplt.savefig('alphah.png')

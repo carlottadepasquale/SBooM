@@ -9,6 +9,7 @@ from lib.simulator import mcgen
 def bootstrap(param, dataset, comm):
 
     bt = param['bt']
+    logger=logging.getLogger(param["logger"])
 
     if "seed" in param:
         np.random.seed(param["seed"] + param["rank"])
@@ -22,7 +23,7 @@ def bootstrap(param, dataset, comm):
         param_bt['alpha'] = dataset['alpha'][j_local]
         param_bt['beta'] = dataset['beta'][j_local]
         param_bt['t'] = param['t']
-        print("param_bt: ", param_bt)
+        logger.debug("param_bt: " + str(param_bt))
         b_i = 0
         dataset['bootstrap'].append({'alpha': np.zeros(bt), 'beta': np.zeros(bt) , 'mu': np.zeros(bt)}) 
         for b in range(bt):
