@@ -4,7 +4,7 @@ def init_dataset(param):
     mc_dataset = {}
     mc_dataset['rank'] = param["rank"]
     
-    rank_map,n_local,id_array = id_map(param)
+    rank_map,n_local,id_array = id_map(param["rank"],param["size"],param["n"])
 
     mc_dataset['rank_map'] = rank_map 
     mc_dataset['id'] = id_array 
@@ -19,24 +19,23 @@ def init_dataset(param):
     mc_dataset['bootstrap'] = []
     return mc_dataset
 
-def id_map(param):
+def id_map(rank,size,n):
 
-    rank_map =  get_rank_map(param)  
-    i_start = rank_map[param['rank']]['i_start'] 
-    i_end = rank_map[param['rank']]['i_end']
+    rank_map =  get_rank_map(size,n)  
+    i_start = rank_map[rank]['i_start'] 
+    i_end = rank_map[rank]['i_end']
     n_local = i_end - i_start
     id_array = np.arange(i_start, i_end )
     return [rank_map,n_local,id_array]
 
-def get_rank_map(param):
-    n = param["n"]
-    size = param["size"]
+def get_rank_map(size,n):
+    
     rank_map = []
     for r in range(size):
-        iterations = param["n"]//param["size"]
+        iterations = n//size
         i_start = r * iterations
         i_end = i_start + iterations
-        if param["rank"] == param["size"]-1:
-            i_end +=  param["n"]%param["size"]
+        if r == size-1:
+            i_end += n%size
         rank_map.append({'i_start': i_start, 'i_end': i_end})
     return rank_map
