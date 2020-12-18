@@ -50,11 +50,18 @@ if "mc" in param["execution"]:
 tmc = MPI.Wtime() - tmc0
 
 tsave0 = MPI.Wtime()
-if "save" in param["execution"]:
+if "save_mc" in param["execution"]:
     from lib.inout import writer
     comm.Barrier()
     writer.save_dataset(param, dataset)
-tsave = MPI.Wtime() - tsave0
+tsave_dset = MPI.Wtime() - tsave0
+
+tsave_bt0 = MPI.Wtime()
+if "save_bt" in param["execution"]:
+    from lib.inout import writer
+    comm.Barrier()
+    writer.save_bootstrap(param, dataset)
+tsave_bt = MPI.Wtime() - tsave_bt0
 
 tbt0 = MPI.Wtime()
 if "bt" in param["execution"]:
@@ -66,6 +73,26 @@ if "plt" in param["execution"]:
     from lib.inout import plot
     plot.plot_estimate(param, dataset, comm)
 
+tcint0 = MPI.Wtime()
+if rank == 0:
+    if "cint1" in param["execution"]:
+        from lib.simulator import bootstrap
+        bootstrap.confidence_int_1(param, dataset, comm)
+
+    if "cint2" in param["execution"]:
+        from lib.simulator import bootstrap
+        bootstrap.confidence_int_2(param, dataset, comm)
+
+    if "cint3" in param["execution"]:
+        from lib.simulator import bootstrap
+        bootstrap.confidence_int_3(param, dataset, comm)
+
+    if "cint4" in param["execution"]:
+        from lib.simulator import bootstrap
+        bootstrap.confidence_int_4(param, dataset, comm)
+
+tcint = MPI.Wtime() - tcint0
+
 tts = MPI.Wtime() - tts0
 
 if rank==0:
@@ -76,7 +103,9 @@ if rank==0:
     logger.critical("Reader time: "+ str(tread)) 
     logger.critical("Montecarlo time: "+ str(tmc)) 
     logger.critical("Bootstrap time: "+ str(tbt)) 
-    logger.critical("Save time: "+ str(tsave)) 
+    logger.critical("Save time dataset: "+ str(tsave_dset)) 
+    logger.critical("Save time bootstrap: "+ str(tsave_bt)) 
+    logger.critical("Confidence intervals time: "+ str(tcint)) 
 
 
 

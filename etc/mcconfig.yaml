@@ -6,7 +6,8 @@ t: 100
 bt: 6
 execution: 
   - "mc"
-  - "save"
+  - "save_mc"
+  - "save_bt"
   - "out"
   - "plt"
   - "bt"

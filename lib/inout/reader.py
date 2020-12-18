@@ -57,7 +57,6 @@ def read_dataset(param):
         mc_dataset = dataset.init_dataset(param)
         
         if param["size"] == old_size: 
-            print("OLD == NEW")
 
             id_local = 0
             
@@ -74,7 +73,7 @@ def read_dataset(param):
                 m=fr[k].attrs['mu']
                 mc_dataset['mu'][id_local] = m
                 id_local += 1
-            print(param["rank"],mc_dataset)
+            
 
         else:
             

@@ -166,8 +166,10 @@ def Quasi_Newton(model,prior=[],merge=[],opt=[]):
 
         i_loop += 1
 
-    
-    ste = EstimationError(model,para,prior)
+    try:
+        ste = EstimationError(model,para,prior)
+    except:
+        ste = 0
     
 
     ###OPTION: Check map solution
