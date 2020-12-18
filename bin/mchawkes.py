@@ -45,11 +45,17 @@ else:
     dataset = dataset.init_dataset(param)
 tread = MPI.Wtime() - tread0
 
+if rank==0:    
+    logger.critical("Reader time: "+ str(tread)) 
+
 tmc0 = MPI.Wtime()
 if "mc" in param["execution"]:
     from lib.simulator import mcgen
     mcgen.simulator(param, dataset, comm)
 tmc = MPI.Wtime() - tmc0
+
+if rank==0:
+    logger.critical("Montecarlo time: "+ str(tmc)) 
 
 tsave0 = MPI.Wtime()
 if "save_mc" in param["execution"]:
@@ -58,6 +64,9 @@ if "save_mc" in param["execution"]:
     writer.save_dataset(param, dataset)
 tsave_dset = MPI.Wtime() - tsave0
 
+if rank==0:
+    logger.critical("Save time dataset: "+ str(tsave_dset)) 
+
 tsave_bt0 = MPI.Wtime()
 if "save_bt" in param["execution"]:
     from lib.inout import writer
@@ -65,11 +74,17 @@ if "save_bt" in param["execution"]:
     writer.save_bootstrap(param, dataset)
 tsave_bt = MPI.Wtime() - tsave_bt0
 
+if rank==0:
+    logger.critical("Save time bootstrap: "+ str(tsave_bt)) 
+
 tbt0 = MPI.Wtime()
 if "bt" in param["execution"]:
     from lib.simulator import bootstrap
     bootstrap.bootstrap(param, dataset, comm)
 tbt = MPI.Wtime() - tbt0
+
+if rank==0:
+    logger.critical("Bootstrap time: "+ str(tbt)) 
 
 if "plt" in param["execution"]:
     from lib.inout import plot
@@ -95,6 +110,9 @@ if rank == 0:
 
 tcint = MPI.Wtime() - tcint0
 
+if rank==0:
+    logger.critical("Confidence intervals time: "+ str(tcint)) 
+
 tts = MPI.Wtime() - tts0
 
 if rank==0:
@@ -102,12 +120,6 @@ if rank==0:
     logger.critical("Number of iterations: "+ str(param["n"]))
     logger.critical("Hawkes T: "+ str(param["t"]))
     logger.critical("Time to solution: "+ str(tts)) 
-    logger.critical("Reader time: "+ str(tread)) 
-    logger.critical("Montecarlo time: "+ str(tmc)) 
-    logger.critical("Bootstrap time: "+ str(tbt)) 
-    logger.critical("Save time dataset: "+ str(tsave_dset)) 
-    logger.critical("Save time bootstrap: "+ str(tsave_bt)) 
-    logger.critical("Confidence intervals time: "+ str(tcint)) 
 
 
 
