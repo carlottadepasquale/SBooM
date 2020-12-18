@@ -25,12 +25,14 @@ logger=logging.getLogger('basic')
 
 if rank==0:
     console_param = console.init()
-    path_file_param = os.path.expandvars("$BMCH_HOME") + "/etc/mcconfig.yaml" #expandvars mi ritorna il contenuto della variabile d'ambiente
-    file_param = reader.read_yaml_param(path_file_param)
+    path_file_param_default = os.path.expandvars("$BMCH_HOME") + "/etc/default/mcconfig.yaml" #expandvars mi ritorna il contenuto della variabile d'ambiente
+    path_file_param_sec = os.path.expandvars("$BMCH_HOME") + "/etc/mcconfig.yaml"
+    file_param = reader.read_yaml_param(path_file_param_default)
+    file_param_sec = reader.read_yaml_param(path_file_param_sec)
+    file_param.update(file_param_sec)
     file_param.update(console_param)
     file_param["size"] = size
     file_param["logger"] = "basic"
-
 
 param = comm.bcast(file_param, root=0)
 param["rank"] = rank
