@@ -17,6 +17,7 @@ def init_dataset(param):
     mc_dataset['n_it'] = param['n']
     mc_dataset['n_local'] = n_local
     mc_dataset['bootstrap'] = []
+    
     return mc_dataset
 
 def id_map(rank,size,n):

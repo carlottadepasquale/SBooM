@@ -10,6 +10,8 @@ import logging
 import json
 import os
 
+from lib.inout import reader
+
 def json_writer(filepath,json_dict):
     """
     Write json file
@@ -37,7 +39,8 @@ def save_dataset(param, dataset):
     #write json file with param
     if param["rank"] == 0:
         json_file = dir_name+"param.json"
-        json_writer(json_file,param)
+        dict_param = {'Montecarlo': param}
+        json_writer(json_file,dict_param)
 
     count = 0 #i in dataset id va fino a n (id globale), ci serve una variabile che ci dia l'id locale
     hdf5_file = dir_name+"mc_dataset_"+str(param["rank"])+".hdf5"
@@ -61,7 +64,31 @@ def save_bootstrap(param, dataset):
      -mc_dataset .hdf5 : contains timeline,alpha,beta,mu for each simulation
 
     """
-    pass
+    logger=logging.getLogger(param["logger"])
+    dir_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
+    dir_name = dir_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/"
+    if param["rank"] == 0:
+        logger.info(dir_name)
+
+    os.makedirs(dir_name,  exist_ok=True) #se esiste già non è un problema ma non sovrascrive
+    #write json file with param
+    
+    if param["rank"] == 0:
+        json_file = dir_name+"param.json"
+        dict_param = reader.json_reader(json_file)
+        dict_param['Bootstrap'] = param
+        json_writer(json_file,dict_param)
+
+    count = 0 #i in dataset id va fino a n (id globale), ci serve una variabile che ci dia l'id locale
+    hdf5_file = dir_name+"bt_dataset_"+str(param["rank"])+".hdf5"
+    fw = h5py.File(hdf5_file, "w")
+    for i in dataset['id']:
+        dset_a_i = fw.create_dataset("bt_alpha_"+str(i), data = dataset['bootstrap'][count]['alpha'] , dtype ='f')
+        dset_b_i = fw.create_dataset("bt_beta_"+str(i), data = dataset['bootstrap'][count]['beta'] , dtype ='f')
+        dset_m_i = fw.create_dataset("bt_mu_"+str(i), data = dataset['bootstrap'][count]['mu'] , dtype ='f')
+        count +=1
+    
+    fw.close()
 
     # logger=logging.getLogger(param["logger"])
     # dir_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"

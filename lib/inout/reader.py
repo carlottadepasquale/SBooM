@@ -46,33 +46,41 @@ def read_dataset(param):
 
     if os.path.exists(json_file):
 
+        if 'bt' in param['execution'] and 'mc' not in param['execution']:
+            name_dict = "Montecarlo"
+            hdf5_filename = input_dir+"mc_dataset_"
+            flag = 'bt'
+        if ('cint1' in param['execution'] or 'cint2' in param['execution'] or \
+            'cint3' in param['execution'] or 'cint1' in param['execution'] ) \
+                and 'bt' not in param['execution']:
+            name_dict = "Bootstrap"
+            hdf5_filename = input_dir+"bt_dataset_"
+            flag = 'cint'
+            
         param_from_file = json_reader(json_file)
-        param['alpha'] = param_from_file['alpha'] 
-        param['beta'] = param_from_file['beta'] 
-        param['mu'] = param_from_file['mu']    
-        param['n'] = param_from_file['n']   
-        param['t'] = param_from_file['t']
-        old_size = param_from_file['size']
+        param['alpha'] = param_from_file[name_dict]['alpha'] 
+        param['beta'] = param_from_file[name_dict]['beta'] 
+        param['mu'] = param_from_file[name_dict]['mu']    
+        param['n'] = param_from_file[name_dict]['n']   
+        param['t'] = param_from_file[name_dict]['t']
+        old_size = param_from_file[name_dict]['size']
         
-        mc_dataset = dataset.init_dataset(param)
+        mcb_dataset = dataset.init_dataset(param)
         
         if param["size"] == old_size: 
 
             id_local = 0
             
-            hdf5_file = input_dir+"mc_dataset_"+str(param["rank"])+".hdf5"
+            hdf5_file = hdf5_filename + str(param["rank"])+".hdf5"
             fr = h5py.File(hdf5_file, 'r')
-            for id in mc_dataset['id']:
-                k = "mc_sim_"+str(id) #nome del dataset hdf5
-                t = (fr[k][:])
-                mc_dataset['t'].append(t)
-                a=fr[k].attrs['alpha']
-                mc_dataset['alpha'][id_local] = a
-                b=fr[k].attrs['beta']
-                mc_dataset['beta'][id_local] = b
-                m=fr[k].attrs['mu']
-                mc_dataset['mu'][id_local] = m
-                id_local += 1
+            if flag == 'bt':
+                for id in mcb_dataset['id']:
+                    fill_dataset_mc(param, mcb_dataset, id, id_local, fr)
+                    id_local += 1
+            if flag == 'cint':
+                for id in mcb_dataset['id']:
+                    fill_dataset_bt(param, mcb_dataset, id, id_local, fr)
+                    id_local += 1
             
 
         else:
@@ -80,14 +88,14 @@ def read_dataset(param):
             rank_map_old = dataset.get_rank_map(old_size,param["n"])
             map_files = []
             id_per_file = []
-            i_start_new = mc_dataset["rank_map"][param["rank"]]['i_start'] 
-            i_end_new = mc_dataset["rank_map"][param["rank"]]['i_end']
+            i_start_new = mcb_dataset["rank_map"][param["rank"]]['i_start'] 
+            i_end_new = mcb_dataset["rank_map"][param["rank"]]['i_end']
            
            
             # create map that indicates to each rank which files to read
             file_number = 0
             
-            for i in mc_dataset["id"]:
+            for i in mcb_dataset["id"]:
                 for file_number in range(old_size):
                     if  rank_map_old[file_number]["i_start"] <= i < rank_map_old[file_number]["i_end"]:
                         map_files.append(file_number)
@@ -124,39 +132,72 @@ def read_dataset(param):
             
             id_local = 0
             count_idx = 0
-            # loop on files
-            for f in map_files:
+            if flag == 'bt':
+                # loop on files
+                for f in map_files:
 
-                hdf5_file = input_dir+"mc_dataset_"+str(f)+".hdf5"
-                #print(f,count_idx, hdf5_file)
-                fr = h5py.File(hdf5_file, 'r')
+                    hdf5_file = hdf5_filename + str(f)+".hdf5"
+                    #print(f,count_idx, hdf5_file)
+                    fr = h5py.File(hdf5_file, 'r')
+                    
+                    for id in id_per_file[count_idx]:
+                        fill_dataset_mc(param, mcb_dataset, id, id_local, fr)
+                        id_local += 1
+                    
+                    fr.close()
+                    count_idx += 1
+            
+            if flag == 'cint':
+                # loop on files
+                for f in map_files:
 
-                # loop on index range 
-                #for file_range in id_per_file:
+                    hdf5_file = hdf5_filename + str(f)+".hdf5"
+                    #print(f,count_idx, hdf5_file)
+                    fr = h5py.File(hdf5_file, 'r')
+                    
+                    for id in id_per_file[count_idx]:
+                        fill_dataset_bt(param, mcb_dataset, id, id_local, fr)
+                        id_local += 1
+                    
+                    fr.close()
+                    count_idx += 1
 
-                    # loop on id in the range
-                for id in id_per_file[count_idx]:
-                   
-                    k = "mc_sim_"+str(id) #nome del dataset hdf5
-                    t = (fr[k][:])
-                    mc_dataset['t'].append(t)
-                    a=fr[k].attrs['alpha']
-                    mc_dataset['alpha'][id_local] = a
-                    b=fr[k].attrs['beta']
-                    mc_dataset['beta'][id_local] = b
-                    m=fr[k].attrs['mu']
-                    mc_dataset['mu'][id_local] = m
-                    id_local += 1
-                   
-                        #print("exc!",id,f)
-                
-                fr.close()
-                count_idx += 1
-
-        #print(param["rank"], mc_dataset)
+        print(param["rank"], mcb_dataset)
 
         
-        return mc_dataset
+        return mcb_dataset
 
     else:
         print('ERROR: input_file does not exist')
+
+def fill_dataset_mc(param, mcb_dataset, id, id_local, fr):
+    """
+    id = global index number, from 0 to N
+    id_local = local rank index number, from 0 to n_local
+    fr = hdf5 object file
+    
+    """
+
+    k = "mc_sim_"+str(id) #nome del dataset hdf5
+    t = (fr[k][:])
+    mcb_dataset['t'].append(t)
+    a=fr[k].attrs['alpha']
+    mcb_dataset['alpha'][id_local] = a
+    b=fr[k].attrs['beta']
+    mcb_dataset['beta'][id_local] = b
+    m=fr[k].attrs['mu']
+    mcb_dataset['mu'][id_local] = m
+        
+
+def fill_dataset_bt(param, mcb_dataset, id, id_local, fr):
+    ba = "bt_alpha_"+str(id) #nome del dataset hdf5
+    a = (fr[ba][:])
+
+    bb = "bt_beta_"+str(id)
+    b = (fr[bb][:])
+
+    bm = "bt_mu_"+str(id)
+    m = (fr[bm][:])
+
+    mcb_dataset['bootstrap'].append({'alpha': a, 'beta': b , 'mu': m})
+        

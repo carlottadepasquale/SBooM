@@ -37,16 +37,21 @@ if rank==0:
 param = comm.bcast(file_param, root=0)
 param["rank"] = rank
 
+####################
+
 tread0 = MPI.Wtime()
-if ("bt" in param["execution"] or "plt" in param["execution"]) and "input" in param:
+if "input" in param:
     dataset = reader.read_dataset(param)
 
 else:
     dataset = dataset.init_dataset(param)
 tread = MPI.Wtime() - tread0
 
+
 if rank==0:    
     logger.critical("Reader time: "+ str(tread)) 
+
+####################
 
 tmc0 = MPI.Wtime()
 if "mc" in param["execution"]:
@@ -56,6 +61,8 @@ tmc = MPI.Wtime() - tmc0
 
 if rank==0:
     logger.critical("Montecarlo time: "+ str(tmc)) 
+
+####################
 
 tsave0 = MPI.Wtime()
 if "save_mc" in param["execution"]:
@@ -67,15 +74,7 @@ tsave_dset = MPI.Wtime() - tsave0
 if rank==0:
     logger.critical("Save time dataset: "+ str(tsave_dset)) 
 
-tsave_bt0 = MPI.Wtime()
-if "save_bt" in param["execution"]:
-    from lib.inout import writer
-    comm.Barrier()
-    writer.save_bootstrap(param, dataset)
-tsave_bt = MPI.Wtime() - tsave_bt0
-
-if rank==0:
-    logger.critical("Save time bootstrap: "+ str(tsave_bt)) 
+####################
 
 tbt0 = MPI.Wtime()
 if "bt" in param["execution"]:
@@ -86,9 +85,25 @@ tbt = MPI.Wtime() - tbt0
 if rank==0:
     logger.critical("Bootstrap time: "+ str(tbt)) 
 
+####################
+
+tsave_bt0 = MPI.Wtime()
+if "save_bt" in param["execution"]:
+    from lib.inout import writer
+    comm.Barrier()
+    writer.save_bootstrap(param, dataset)
+tsave_bt = MPI.Wtime() - tsave_bt0
+
+if rank==0:
+    logger.critical("Save time bootstrap: "+ str(tsave_bt)) 
+
+####################
+
 if "plt" in param["execution"]:
     from lib.inout import plot
     plot.plot_estimate(param, dataset, comm)
+
+####################
 
 tcint0 = MPI.Wtime()
 if rank == 0:
@@ -112,6 +127,8 @@ tcint = MPI.Wtime() - tcint0
 
 if rank==0:
     logger.critical("Confidence intervals time: "+ str(tcint)) 
+
+####################
 
 tts = MPI.Wtime() - tts0
 
