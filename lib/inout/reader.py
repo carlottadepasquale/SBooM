@@ -51,7 +51,7 @@ def read_dataset(param):
             hdf5_filename = input_dir+"mc_dataset_"
             flag = 'bt'
         if ('cint1' in param['execution'] or 'cint2' in param['execution'] or \
-            'cint3' in param['execution'] or 'cint1' in param['execution'] ) \
+            'cint3' in param['execution'] or 'cint4' in param['execution'] ) \
                 and 'bt' not in param['execution']:
             name_dict = "Bootstrap"
             hdf5_filename = input_dir+"bt_dataset_"
@@ -162,7 +162,7 @@ def read_dataset(param):
                     fr.close()
                     count_idx += 1
 
-        print(param["rank"], mcb_dataset)
+        # print(param["rank"], mcb_dataset)
 
         
         return mcb_dataset
