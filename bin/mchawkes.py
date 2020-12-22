@@ -24,6 +24,7 @@ log.logger_init(rank, "basic")
 logger=logging.getLogger('basic')
 
 if rank==0:
+    time_format = "{t:.3f}"
     console_param = console.init()
     path_file_param_default = os.path.expandvars("$BMCH_HOME") + "/etc/default/mcconfig.yaml" #expandvars mi ritorna il contenuto della variabile d'ambiente
     path_file_param_sec = os.path.expandvars("$BMCH_HOME") + "/etc/mcconfig.yaml"
@@ -49,7 +50,7 @@ tread = MPI.Wtime() - tread0
 
 
 if rank==0:    
-    logger.critical("Reader time: "+ str(tread)) 
+    logger.critical("Reader time: "+ time_format.format(t=tread))
 
 ####################
 
@@ -60,7 +61,7 @@ if "mc" in param["execution"]:
 tmc = MPI.Wtime() - tmc0
 
 if rank==0:
-    logger.critical("Montecarlo time: "+ str(tmc)) 
+    logger.critical("Montecarlo time: "+ time_format.format(t=tmc)) 
 
 ####################
 
@@ -72,7 +73,7 @@ if "save_mc" in param["execution"]:
 tsave_dset = MPI.Wtime() - tsave0
 
 if rank==0:
-    logger.critical("Save time dataset: "+ str(tsave_dset)) 
+    logger.critical("Save time dataset: "+ time_format.format(t=tsave_dset)) 
 
 ####################
 
@@ -83,7 +84,7 @@ if "bt" in param["execution"]:
 tbt = MPI.Wtime() - tbt0
 
 if rank==0:
-    logger.critical("Bootstrap time: "+ str(tbt)) 
+    logger.critical("Bootstrap time: "+ time_format.format(t=tbt)) 
 
 ####################
 
@@ -95,7 +96,7 @@ if "save_bt" in param["execution"]:
 tsave_bt = MPI.Wtime() - tsave_bt0
 
 if rank==0:
-    logger.critical("Save time bootstrap: "+ str(tsave_bt)) 
+    logger.critical("Save time bootstrap: "+ time_format.format(t=tsave_bt)) 
 
 ####################
 
@@ -126,7 +127,7 @@ if rank == 0:
 tcint = MPI.Wtime() - tcint0
 
 if rank==0:
-    logger.critical("Confidence intervals time: "+ str(tcint)) 
+    logger.critical("Confidence intervals time: "+ time_format.format(t=tcint)) 
 
 ####################
 
@@ -136,7 +137,7 @@ if rank==0:
     logger.critical("MPI Size: "+ str(size))
     logger.critical("Number of iterations: "+ str(param["n"]))
     logger.critical("Hawkes T: "+ str(param["t"]))
-    logger.critical("Time to solution: "+ str(tts)) 
+    logger.critical("Time to solution: "+ time_format.format(t=tts)) 
 
 
 

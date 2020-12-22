@@ -88,13 +88,14 @@ def simulator(param, dataset, comm):
     comm.Reduce(avg_t_est_loc, total_est, op=MPI.SUM, root=0)
 
     if param['rank'] == 0:
+        nevents_format = "{n:.1f}"
         logger.info('mu_ok: ' + str(100*mu_ok_tot/param['n']) + '%')
         logger.info('alpha_ok: ' + str(100*alpha_ok_tot/param['n']) + '%')
         logger.info('beta_ok: '+ str(100*beta_ok_tot/n) + '%')
         avg_n_events_p = n_events_tot / n
         avg_n_events_t = param['mu']*param['t']/(1-param['alpha'])
 
-        logger.info('theorical avg n of events: ' + str(avg_n_events_t))
+        logger.info('theorical avg n of events: ' + nevents_format.format(n=avg_n_events_t))
         logger.info('avg n of events: ' + str(avg_n_events_p))
 
         avg_t_sim = total_sim[0]/param['size']
