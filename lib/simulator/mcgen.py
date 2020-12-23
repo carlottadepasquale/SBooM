@@ -34,6 +34,7 @@ def simulator(param, dataset, comm):
     alpha_ok_tot = np.zeros(1)
     beta_ok_tot = np.zeros(1)
     n_events_tot = np.zeros(1)
+    opt = ['stderr']
 
     for i in dataset['id']:
 
@@ -44,7 +45,7 @@ def simulator(param, dataset, comm):
 
 
         t_est0 = MPI.Wtime()
-        model = inference(hsim, param) #prima mettevamo anche i, tolto
+        model = inference(hsim, param, opt) #prima mettevamo anche i, tolto
         t_est[0] += MPI.Wtime() - t_est0
 
         log_output = "iteration " + str(i) + "\n"
@@ -119,11 +120,11 @@ def hawkes(param):
         
     return hsim
 
-def inference(hsim, param):
+def inference(hsim, param, opt):
     model = hk.estimator().set_kernel('exp',num_exp=1).set_baseline('const')
     t = int(param['t'])
     interval = [0,t]
-    model.fit(hsim, interval)  #,  opt=["ste", "print"])  #, "check"])
+    model.fit(hsim, interval, opt=opt)  #,  opt=["ste", "print"])  #, "check"])
     # stderr = model.stderr
     # print('Std Error: ', stderr)
     return model

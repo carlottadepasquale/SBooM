@@ -27,9 +27,10 @@ def bootstrap(param, dataset, comm):
         logger.debug("param_bt: " + str(param_bt))
         b_i = 0
         dataset['bootstrap'].append({'alpha': np.zeros(bt), 'beta': np.zeros(bt) , 'mu': np.zeros(bt)}) 
+        opt = ['nostderr']
         for b in range(bt):
             hsim_bt = mcgen.hawkes(param_bt)
-            model_bt = mcgen.inference(hsim_bt, param)
+            model_bt = mcgen.inference(hsim_bt, param, opt)
             dataset['bootstrap'][j_local]['alpha'][b_i] = model_bt.parameter['alpha']
             dataset['bootstrap'][j_local]['beta'][b_i] = model_bt.parameter['beta']
             dataset['bootstrap'][j_local]['mu'][b_i] = model_bt.parameter['mu']
