@@ -119,10 +119,10 @@ def read_dataset(param):
                     start = rank_map_old[m]["i_start"]
 
                 if i_end_new >= rank_map_old[m]["i_end"]:
-                    end = rank_map_old[m]["i_end"]-1
+                    end = rank_map_old[m]["i_end"]
                      
                 if i_end_new < rank_map_old[m]["i_end"]: 
-                    end = i_end_new-1
+                    end = i_end_new
 
                 r = range(start,end)
                 id_per_file.append(r)
@@ -162,7 +162,7 @@ def read_dataset(param):
                     fr.close()
                     count_idx += 1
 
-        # print(param["rank"], mcb_dataset)
+        print(param["rank"], mcb_dataset)
 
         
         return mcb_dataset

@@ -44,7 +44,7 @@ def simulator(param, dataset, comm):
 
 
         t_est0 = MPI.Wtime()
-        model = inference(i, hsim, param)
+        model = inference(hsim, param) #prima mettevamo anche i, tolto
         t_est[0] += MPI.Wtime() - t_est0
 
         log_output = "iteration " + str(i) + "\n"
@@ -119,7 +119,7 @@ def hawkes(param):
         
     return hsim
 
-def inference(i, hsim, param):
+def inference(hsim, param):
     model = hk.estimator().set_kernel('exp',num_exp=1).set_baseline('const')
     t = int(param['t'])
     interval = [0,t]

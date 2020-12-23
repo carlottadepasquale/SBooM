@@ -16,6 +16,7 @@ def bootstrap(param, dataset, comm):
     else:
         t = int(time.time())
         np.random.seed(param["rank"] + t)
+
     j_local = 0
     for i in dataset['id']:
         param_bt = {}
@@ -28,7 +29,7 @@ def bootstrap(param, dataset, comm):
         dataset['bootstrap'].append({'alpha': np.zeros(bt), 'beta': np.zeros(bt) , 'mu': np.zeros(bt)}) 
         for b in range(bt):
             hsim_bt = mcgen.hawkes(param_bt)
-            model_bt = mcgen.inference(i, hsim_bt, param)
+            model_bt = mcgen.inference(hsim_bt, param)
             dataset['bootstrap'][j_local]['alpha'][b_i] = model_bt.parameter['alpha']
             dataset['bootstrap'][j_local]['beta'][b_i] = model_bt.parameter['beta']
             dataset['bootstrap'][j_local]['mu'][b_i] = model_bt.parameter['mu']
