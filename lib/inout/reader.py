@@ -162,7 +162,7 @@ def read_dataset(param):
                     fr.close()
                     count_idx += 1
 
-        print(param["rank"], mcb_dataset)
+        #print(param["rank"], mcb_dataset)
 
         
         return mcb_dataset

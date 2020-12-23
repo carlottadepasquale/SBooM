@@ -44,6 +44,12 @@ def confidence_int_1(param, dataset, comm):
     dataset['cint_mu_1'] = []
     
     i_loc = 0
+    alpha_1_ok = np.zeros(1)
+    beta_1_ok = np.zeros(1)
+    mu_1_ok = np.zeros(1)
+    mu_1_ok_tot = np.zeros(1)
+    alpha_1_ok_tot = np.zeros(1)
+    beta_1_ok_tot = np.zeros(1)
 
     for i in dataset['id']:
         q1alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.05)
@@ -58,11 +64,27 @@ def confidence_int_1(param, dataset, comm):
         dataset['cint_beta_1'].append([q1beta, q2beta])
         dataset['cint_mu_1'].append([q1mu, q2mu])
 
+        if (q2mu >= param['mu'] and q1mu <= param['mu']):
+            mu_1_ok[0] += 1
+        if (q2alpha >= param['alpha'] and q1alpha <= param['alpha']):
+            alpha_1_ok[0] += 1
+        if (q2beta >= param['beta'] and q1beta <= param['beta']):
+            beta_1_ok[0] += 1
+
         i_loc += 1
+    
+    comm.Reduce(mu_1_ok, mu_1_ok_tot, op=MPI.SUM, root=0)
+    comm.Reduce(alpha_1_ok, alpha_1_ok_tot, op=MPI.SUM, root=0)
+    comm.Reduce(beta_1_ok, beta_1_ok_tot, op=MPI.SUM, root=0) 
 
     print("alpha cint 1: ", dataset['cint_alpha_1'])
     print("beta cint 1: ", dataset['cint_beta_1'])
     print("mu cint 1: ", dataset['cint_mu_1'])
+
+    if param['rank'] ==0:
+        print('alpha_1_ok: ', alpha_1_ok_tot)
+        print('beta_1_ok: ', beta_1_ok_tot)
+        print('mu_1_ok: ', mu_1_ok_tot)
 
 def confidence_int_2(param, dataset, comm):
     
