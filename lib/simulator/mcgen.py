@@ -53,6 +53,7 @@ def simulator(param, dataset, comm):
         log_output += "branching ratio: " + str(model.br) + "\n" # the branching ratio
         log_output += "log-likelihood:" + str(model.L) + "\n" # the log-likelihood of the estimated parameter values
         logger.debug(log_output)
+        logger.debug("Stderr calculation fails: " + str(model.count_err))
 
         dataset['t'].append(hsim)
         dataset['alpha'][i_local] = model.parameter['alpha']

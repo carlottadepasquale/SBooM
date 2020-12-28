@@ -167,20 +167,19 @@ def Quasi_Newton(model,prior=[],merge=[],opt=[]):
         i_loop += 1
 
     ste = [0.0, 0.0, 0.0]
+    count_err = 0
     if 'stderr' in opt:
         try:
             ste = EstimationError(model,para,prior)
         except:
-            pass
-    
-
-        
+            count_err += 1
+              
 
     ###OPTION: Check map solution
     if 'check' in opt:
             Check_QN(model,para,prior)
 
-    return [param.to_dict(para),L1,ste,np.linalg.norm(G1),i_loop, ste]
+    return [param.to_dict(para),L1,ste,np.linalg.norm(G1),i_loop, count_err]
 
 def Check_QN(model,para,prior):
     param = model.stg['para_label']

@@ -154,16 +154,16 @@ class estimator(base_class):
         stg = merge_stg([stg_b,stg_k])
         self.stg = stg
 
-        [para,L,ste,G_norm,i_loop, stderr] = Quasi_Newton(self,prior,merge,opt)
+        [para,L,ste,G_norm,i_loop, count_err] = Quasi_Newton(self,prior,merge,opt)
 
-        self.stderr = stderr
+        self.stderr = ste
         self.para = para
         self.parameter = para
         self.L = L
         self.AIC = -2.0*(L-len(para))
         self.br = self.kernel.branching_ratio()
-        self.ste = ste
         self.i_loop = i_loop
+        self.count_err = count_err
 
         return self
 
