@@ -77,7 +77,7 @@ def save_bootstrap(param, dataset):
     
     if param["rank"] == 0:
         dict_param = {}
-        if os.path.exist(json_file):
+        if os.path.exists(json_file):
             dict_param = reader.json_reader(json_file)
         dict_param['Bootstrap'] = param
         json_writer(json_file,dict_param)
