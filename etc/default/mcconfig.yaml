@@ -11,7 +11,7 @@ execution:
   - "out"
   - "plt"
   - "bt"
-loglevel: "INFO"
+log_level: "INFO"
 dataset_dir: "/home/carlottade/Dataset_hdf5/"
 outprefix: "mc_dataset"
 #input: "mc_dataset_0.5_0.8_5/N_10_T_100"

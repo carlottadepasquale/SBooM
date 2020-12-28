@@ -36,7 +36,8 @@ if rank==0:
 param = comm.bcast(file_param, root=0)
 log.logger_init(rank, param["logger"], param["log_level"])
 logger=logging.getLogger('basic')
-logger.critical("START Mchawkes.py")
+if rank==0:
+    logger.critical("START Mchawkes.py")
 param["rank"] = rank
 
 ####################
