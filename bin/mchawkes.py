@@ -109,22 +109,22 @@ if "plt" in param["execution"]:
 ####################
 
 tcint0 = MPI.Wtime()
-if rank == 0:
-    if "cint1" in param["execution"]:
-        from lib.simulator import bootstrap
-        bootstrap.confidence_int_1(param, dataset, comm)
 
-    if "cint2" in param["execution"]:
-        from lib.simulator import bootstrap
-        bootstrap.confidence_int_2(param, dataset, comm)
+if "cint1" in param["execution"]:
+    from lib.simulator import bootstrap
+    bootstrap.confidence_int_1(param, dataset, comm)
 
-    if "cint3" in param["execution"]:
-        from lib.simulator import bootstrap
-        bootstrap.confidence_int_3(param, dataset, comm)
+if "cint2" in param["execution"]:
+    from lib.simulator import bootstrap
+    bootstrap.confidence_int_2(param, dataset, comm)
 
-    if "cint4" in param["execution"]:
-        from lib.simulator import bootstrap
-        bootstrap.confidence_int_4(param, dataset, comm)
+if "cint3" in param["execution"]:
+    from lib.simulator import bootstrap
+    bootstrap.confidence_int_3(param, dataset, comm)
+
+if "cint4" in param["execution"]:
+    from lib.simulator import bootstrap
+    bootstrap.confidence_int_4(param, dataset, comm)
 
 tcint = MPI.Wtime() - tcint0
 
