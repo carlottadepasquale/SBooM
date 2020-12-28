@@ -13,6 +13,7 @@ def init():
     parser.add_argument('-e','--execution', nargs='+', help='type of execution')
     parser.add_argument('--dataset_dir', help='where to save the dataset')
     parser.add_argument('--input', help='name of the dataset')
+    parser.add_argument('--log_level', help='logger level (DEBUG, INFO, WARNING, CRITICAL)')
     argn = parser.parse_args()
     console_param = {}
     if argn.number_of_interations:
@@ -45,4 +46,8 @@ def init():
     if argn.input:
         name = argn.input
         console_param["input"] = name
+    if argn.log_level:
+        log_level = argn.log_level
+        console_param["log_level"] = log_level
+    
     return console_param

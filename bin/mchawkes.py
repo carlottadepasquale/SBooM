@@ -20,8 +20,6 @@ file_param = {}
 
 tts0 = MPI.Wtime()
 
-log.logger_init(rank, "basic")
-logger=logging.getLogger('basic')
 
 if rank==0:
     time_format = "{t:.3f}"
@@ -36,6 +34,9 @@ if rank==0:
     file_param["logger"] = "basic"
 
 param = comm.bcast(file_param, root=0)
+log.logger_init(rank, param["logger"], param["log_level"])
+logger=logging.getLogger('basic')
+logger.critical("START Mchawkes.py")
 param["rank"] = rank
 
 ####################
@@ -138,6 +139,8 @@ if rank==0:
     logger.critical("Number of iterations: "+ str(param["n"]))
     logger.critical("Hawkes T: "+ str(param["t"]))
     logger.critical("Time to solution: "+ time_format.format(t=tts)) 
+    logger.critical("END Mchawkes.py")
+
 
 
 
