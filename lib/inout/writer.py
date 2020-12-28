@@ -67,10 +67,11 @@ def save_bootstrap(param, dataset):
     logger=logging.getLogger(param["logger"])
     dir_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
     dir_name = dir_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/"
+    dir_name_hdf5 = dir_name+ "bt_" + str(param['bt'])+ "/"
     if param["rank"] == 0:
         logger.info(dir_name)
 
-    os.makedirs(dir_name,  exist_ok=True) #se esiste già non è un problema ma non sovrascrive
+    os.makedirs(dir_name_hdf5,  exist_ok=True) #se esiste già non è un problema ma non sovrascrive
     #write json file with param
     
     json_file = dir_name+"param.json"
@@ -79,11 +80,12 @@ def save_bootstrap(param, dataset):
         dict_param = {}
         if os.path.exists(json_file):
             dict_param = reader.json_reader(json_file)
-        dict_param['Bootstrap'] = param
+        dict_param['Bootstrap_' + str(param['bt'])] = param 
+        param['bootstrap_dataset_dir'] = dir_name_hdf5
         json_writer(json_file,dict_param)
 
     count = 0 #i in dataset id va fino a n (id globale), ci serve una variabile che ci dia l'id locale
-    hdf5_file = dir_name+"bt_dataset_"+str(param["rank"])+".hdf5"
+    hdf5_file = dir_name_hdf5 + "bt_dataset_"+str(param["rank"])+".hdf5"
     fw = h5py.File(hdf5_file, "w")
     for i in dataset['id']:
         dset_a_i = fw.create_dataset("bt_alpha_"+str(i), data = dataset['bootstrap'][count]['alpha'] , dtype ='f')
