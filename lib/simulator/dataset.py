@@ -9,9 +9,9 @@ def init_dataset(param):
     mc_dataset['rank_map'] = rank_map 
     mc_dataset['id'] = id_array 
     
-    mc_dataset['alpha'] = np.empty(n_local)
-    mc_dataset['beta'] = np.empty(n_local)
-    mc_dataset['mu'] = np.empty(n_local)
+    mc_dataset['alpha'] = np.zeros(n_local)
+    mc_dataset['beta'] = np.zeros(n_local)
+    mc_dataset['mu'] = np.zeros(n_local)
     mc_dataset['stderr'] =[] 
     mc_dataset['t'] = []
     mc_dataset['n_it'] = param['n']

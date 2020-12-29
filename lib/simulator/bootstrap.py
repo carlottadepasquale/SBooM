@@ -125,11 +125,6 @@ def confidence_int_2(param, dataset, comm):
 
         i_loc += 1
 
-    print('cint_alpha_2 random', dataset['cint_beta_2'][-1])
-    print('cint_alpha_2 random', dataset['cint_beta_2'][1])
-    print('cint_alpha_2 random', dataset['cint_beta_2'][50])
-    print('cint_alpha_2 random', dataset['cint_beta_2'][100])
-    print('cint_alpha_2 random', dataset['cint_beta_2'][200])
     
     comm.Reduce(mu_2_ok, mu_2_ok_tot, op=MPI.SUM, root=0)
     comm.Reduce(alpha_2_ok, alpha_2_ok_tot, op=MPI.SUM, root=0)
@@ -176,7 +171,7 @@ def confidence_int_3(param, dataset, comm):
         if (q2mu >= param['mu'] and q1mu <= param['mu']):
             mu_3_ok[0] += 1
         if (q2alpha >= param['alpha'] and q1alpha <= param['alpha']):
-            print(i, 'alpha: ', dataset['bootstrap'][i_loc]['alpha'], "confidence int: ", dataset['cint_alpha_3'][-1])
+            #print(i, 'alpha: ', dataset['bootstrap'][i_loc]['alpha'], "confidence int: ", dataset['cint_alpha_3'][-1])
             alpha_3_ok[0] += 1
         if (q2beta >= param['beta'] and q1beta <= param['beta']):
             beta_3_ok[0] += 1
