@@ -49,45 +49,72 @@ def read_dataset(param):
         if 'bt' in param['execution'] and 'mc' not in param['execution']:
             name_dict = "Montecarlo"
             hdf5_filename_mc = input_dir+"mc_dataset_"
-            bt = True
+            flag = 'bt'
+
+            param_from_file = json_reader(json_file)
+            param['alpha'] = param_from_file[name_dict]['alpha'] 
+            param['beta'] = param_from_file[name_dict]['beta'] 
+            param['mu'] = param_from_file[name_dict]['mu']    
+            param['n'] = param_from_file[name_dict]['n']   
+            param['t'] = param_from_file[name_dict]['t']
+            old_size = param_from_file[name_dict]['size']
+
+            mcb_dataset = dataset.init_dataset(param)
+
+            rank_mapping(param, mcb_dataset, old_size, hdf5_filename_mc, flag)
+
+
         if ('cint1' in param['execution'] or 'cint2' in param['execution'] or \
             'cint3' in param['execution'] or 'cint4' in param['execution'] ) \
                 and 'bt' not in param['execution']:
             name_dict = "Bootstrap_" + str(param['bt'])
             hdf5_filename_mc = input_dir+"mc_dataset_"
             hdf5_filename_bt = input_dir + "bt_" + str(param['bt']) + "/bt_dataset_"
-            bt = True
-            cint = True
+            flag = 'cint'
             
-        param_from_file = json_reader(json_file)
-        param['alpha'] = param_from_file[name_dict]['alpha'] 
-        param['beta'] = param_from_file[name_dict]['beta'] 
-        param['mu'] = param_from_file[name_dict]['mu']    
-        param['n'] = param_from_file[name_dict]['n']   
-        param['t'] = param_from_file[name_dict]['t']
-        old_size = param_from_file[name_dict]['size']
-        
-        mcb_dataset = dataset.init_dataset(param)
+            param_from_file = json_reader(json_file)
+            param['alpha'] = param_from_file[name_dict]['alpha'] 
+            param['beta'] = param_from_file[name_dict]['beta'] 
+            param['mu'] = param_from_file[name_dict]['mu']    
+            param['n'] = param_from_file[name_dict]['n']   
+            param['t'] = param_from_file[name_dict]['t']
+            old_size = param_from_file[name_dict]['size']
+
+            mcb_dataset = dataset.init_dataset(param)
+
+            #first we fills the bootstrap portion of dataset 
+            rank_mapping(param, mcb_dataset, old_size, hdf5_filename_bt, flag) 
+            
+            #we redefine some parameters to then fill the mc portion of dataset
+            name_dict = 'Montecarlo'
+            old_size = param_from_file[name_dict]['size']
+            flag = 'bt'
+
+            rank_mapping(param, mcb_dataset, old_size, hdf5_filename_mc, flag)
+
+    else:
+        print('ERROR: input_file does not exist')
+
+    return mcb_dataset
+
+def rank_mapping(param, mcb_dataset, old_size, hdf5_filename, flag):
         
         if param["size"] == old_size: 
 
-            if bt:
-                id_local = 0
-                
-                hdf5_file = hdf5_filename_mc + str(param["rank"])+".hdf5"
-                fr = h5py.File(hdf5_file, 'r')
+            id_local = 0
+            
+            hdf5_file = hdf5_filename + str(param["rank"])+".hdf5"
+            fr = h5py.File(hdf5_file, 'r')
+            if flag == 'bt':
                 for id in mcb_dataset['id']:
                     fill_dataset_mc(param, mcb_dataset, id, id_local, fr)
                     id_local += 1
-                fr.close()
-            if cint:
-                id_local = 0
-                hdf5_file = hdf5_filename_bt + str(param["rank"])+".hdf5"
-                fr = h5py.File(hdf5_file, 'r')
+        
+            if flag == 'cint':
                 for id in mcb_dataset['id']:
                     fill_dataset_bt(param, mcb_dataset, id, id_local, fr)
                     id_local += 1
-                fr.close()
+            fr.close()
             
 
         else:
@@ -107,14 +134,12 @@ def read_dataset(param):
                     if  rank_map_old[file_number]["i_start"] <= i < rank_map_old[file_number]["i_end"]:
                         map_files.append(file_number)
                         break
-
-            map_files = list(dict.fromkeys(map_files))
+            
+            #makes the list elements keys in a dictionary so 
+            #they are not repeated and then puts them in another list
+            map_files = list(dict.fromkeys(map_files))  #list of files for each rank         
 
             # for each file in map indicates range of id to be read
-            
-            #print(param["rank"], map_files) 
-            
-
             for m in map_files:
                 start = 0
                 end = 0 
@@ -134,51 +159,37 @@ def read_dataset(param):
                 r = range(start,end)
                 id_per_file.append(r)
 
-            #print(param["rank"], id_per_file)
-            
-            
             id_local = 0
             count_idx = 0
-            if bt:
-                id_local = 0
-                count_idx = 0
+
+            if flag == 'bt': 
                 # loop on files
                 for f in map_files:
-
-                    hdf5_file = hdf5_filename_mc + str(f)+".hdf5"
-                    #print(f,count_idx, hdf5_file)
+                    hdf5_file = hdf5_filename + str(f)+".hdf5"
                     fr = h5py.File(hdf5_file, 'r')
+
+                    #print(f,count_idx, hdf5_file)
                     
                     for id in id_per_file[count_idx]:
                         fill_dataset_mc(param, mcb_dataset, id, id_local, fr)
                         id_local += 1
-                    
-                    fr.close()
                     count_idx += 1
+                    fr.close()
             
-            if cint:
-                id_local = 0
-                count_idx = 0
+            if flag == 'cint':
                 # loop on files
                 for f in map_files:
-
-                    hdf5_file = hdf5_filename_bt + str(f)+".hdf5"
-                    #print(f,count_idx, hdf5_file)
+                    hdf5_file = hdf5_filename + str(f)+".hdf5"
                     fr = h5py.File(hdf5_file, 'r')
-                    
+                                    
                     for id in id_per_file[count_idx]:
                         fill_dataset_bt(param, mcb_dataset, id, id_local, fr)
                         id_local += 1
-                    
-                    fr.close()
                     count_idx += 1
+                    fr.close()
 
         #print(param["rank"], mcb_dataset)
-             
-        return mcb_dataset
 
-    else:
-        print('ERROR: input_file does not exist')
 
 def fill_dataset_mc(param, mcb_dataset, id, id_local, fr):
     """
