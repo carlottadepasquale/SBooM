@@ -22,7 +22,7 @@ tts0 = MPI.Wtime()
 
 
 if rank==0:
-    time_format = "{t:.3f}"
+    time_format = "{t:.3f} s"
     console_param = console.init()
     path_file_param_default = os.path.expandvars("$BMCH_HOME") + "/etc/default/mcconfig.yaml" #expandvars mi ritorna il contenuto della variabile d'ambiente
     path_file_param_sec = os.path.expandvars("$BMCH_HOME") + "/etc/mcconfig.yaml"

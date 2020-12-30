@@ -117,7 +117,7 @@ def confidence_int_2(param, dataset, comm):
 
         if ( dataset['cint_mu_2'][-1][1]>= param['mu'] and dataset['cint_mu_2'][-1][0] <= param['mu']):
             mu_2_ok[0] += 1
-        if (dataset['cint_mu_2'][-1][1] >= param['alpha'] and dataset['cint_alpha_2'][-1][0] <= param['alpha']):
+        if (dataset['cint_alpha_2'][-1][1] >= param['alpha'] and dataset['cint_alpha_2'][-1][0] <= param['alpha']):
             alpha_2_ok[0] += 1
             #print('alpha: ', dataset['bootstrap'][i_loc]['alpha'])
         if (dataset['cint_beta_2'][-1][1] >= param['beta'] and dataset['cint_beta_2'][-1][0] <= param['beta']):
