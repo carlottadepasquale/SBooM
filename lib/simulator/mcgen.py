@@ -34,6 +34,8 @@ def simulator(param, dataset, comm):
     alpha_ok_tot = np.zeros(1)
     beta_ok_tot = np.zeros(1)
     n_events_tot = np.zeros(1)
+    ste_error_count = np.zeros(1)
+    ste_error_count_tot = np.zeros(1)
     opt = ['stderr']
 
     for i in dataset['id']:
@@ -48,12 +50,13 @@ def simulator(param, dataset, comm):
         model = inference(hsim, param, opt) #prima mettevamo anche i, tolto
         t_est[0] += MPI.Wtime() - t_est0
 
+        ste_error_count[0] += model.count_err
+
         log_output = "iteration " + str(i) + "\n"
         log_output += "parameter: "+ str(model.parameter) + "\n"
         log_output += "branching ratio: " + str(model.br) + "\n" # the branching ratio
         log_output += "log-likelihood:" + str(model.L) + "\n" # the log-likelihood of the estimated parameter values
         logger.debug(log_output)
-        logger.debug("Stderr calculation fails: " + str(model.count_err))
 
         dataset['t'].append(hsim)
         dataset['alpha'][i_local] = model.parameter['alpha']
@@ -81,7 +84,8 @@ def simulator(param, dataset, comm):
     comm.Reduce(mu_ok, mu_ok_tot, op=MPI.SUM, root=0)
     comm.Reduce(alpha_ok, alpha_ok_tot, op=MPI.SUM, root=0)
     comm.Reduce(beta_ok, beta_ok_tot, op=MPI.SUM, root=0)
-    comm.Reduce(n_events, n_events_tot, op=MPI.SUM, root=0)    
+    comm.Reduce(n_events, n_events_tot, op=MPI.SUM, root=0) 
+    comm.Reduce(ste_error_count, ste_error_count_tot, op=MPI.SUM, root=0)    
     
     avg_t_sim_loc = t_sim/i_local
     avg_t_est_loc = t_est/i_local
@@ -90,19 +94,25 @@ def simulator(param, dataset, comm):
     comm.Reduce(avg_t_est_loc, total_est, op=MPI.SUM, root=0)
 
     if param['rank'] == 0:
-        nevents_format = "{n:.1f}"
-        logger.info('mu_ok: ' + str(100*mu_ok_tot/param['n']) + '%')
-        logger.info('alpha_ok: ' + str(100*alpha_ok_tot/param['n']) + '%')
-        logger.info('beta_ok: '+ str(100*beta_ok_tot/n) + '%')
         avg_n_events_p = n_events_tot / n
         avg_n_events_t = param['mu']*param['t']/(1-param['alpha'])
-
-        logger.info('theorical avg n of events: ' + nevents_format.format(n=avg_n_events_t))
-        logger.info('avg n of events: ' + str(avg_n_events_p))
-
+        
         avg_t_sim = total_sim[0]/param['size']
         avg_t_est = total_est[0]/param['size']
-        logger.info("Avg time Hawkes: " + str(avg_t_sim) +"  " + "Avg time inference: "+ str(avg_t_est))
+
+        nevents_format = "{n:.1f}"
+        avgt_format = "{n:.5f}"
+        log_string = '\n- mu_asymptotic:    ' + str(100*mu_ok_tot[0]/param['n']) + '%\n'
+        log_string += '- alpha_asymptotic: ' + str(100*alpha_ok_tot[0]/param['n']) + '%\n'
+        log_string += '- beta_asymptotic:  '+ str(100*beta_ok_tot[0]/n) + '%\n'
+        log_string += "- Stderr calculation fails: " + str(ste_error_count_tot[0]) + '\n'
+
+        log_string += '- Theorical avg n of events: ' + nevents_format.format(n=avg_n_events_t) + '\n'
+        log_string += '- Avg n of events: ' + str(avg_n_events_p[0]) + '\n'
+
+        log_string += ("- Avg time Hawkes: " + avgt_format.format(n=avg_t_sim) +"\n" + "- Avg time inference: "+ avgt_format.format(n=avg_t_est))
+
+        logger.info(log_string)
 
 
 def hawkes(param):

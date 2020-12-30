@@ -2,6 +2,7 @@ import numpy as np
 import logging
 import time
 from mpi4py import MPI
+import logging
 
 from lib import Hawkes as hk
 from lib.simulator import mcgen
@@ -39,6 +40,8 @@ def bootstrap(param, dataset, comm):
         #print("dset_bt: ", dataset['bootstrap'])
     
 def confidence_int_1(param, dataset, comm):
+
+    logger=logging.getLogger(param["logger"])
 
     dataset['cint_alpha_1'] = []
     dataset['cint_beta_1'] = []
@@ -82,13 +85,17 @@ def confidence_int_1(param, dataset, comm):
     # print("beta cint 1: ", dataset['cint_beta_1'])
     # print("mu cint 1: ", dataset['cint_mu_1'])
 
-    if param['rank'] ==0:
-        print('alpha_1_ok: ', alpha_1_ok_tot/dataset['n_it']*100, '%')
-        print('beta_1_ok: ', beta_1_ok_tot/dataset['n_it']*100, '%')
-        print('mu_1_ok: ', mu_1_ok_tot/dataset['n_it']*100, '%')
+    if param['rank'] == 0:
+        log_str = '\n- method1_alpha_bt: ' + str(alpha_1_ok_tot[0]/dataset['n_it']*100) + '%\n'
+        log_str += '- method1_beta_bt:   ' + str(beta_1_ok_tot[0]/dataset['n_it']*100) + '%\n'
+        log_str += '- method1_mu_bt:     ' + str(mu_1_ok_tot[0]/dataset['n_it']*100) + '%\n'
+
+        logger.info(log_str)
 
 def confidence_int_2(param, dataset, comm):
     
+    logger=logging.getLogger(param["logger"])
+
     dataset['cint_alpha_2'] = []
     dataset['cint_beta_2'] = []
     dataset['cint_mu_2'] = []
@@ -135,13 +142,16 @@ def confidence_int_2(param, dataset, comm):
     # print("mu cint 2: ", dataset['cint_mu_2'])
 
     if param['rank'] ==0:
-        print('alpha_2_ok: ', alpha_2_ok_tot/dataset['n_it']*100, '%')
-        print('beta_2_ok: ', beta_2_ok_tot/dataset['n_it']*100, '%')
-        print('mu_2_ok: ', mu_2_ok_tot/dataset['n_it']*100, '%')
+        log_str = '\n- method2_alpha_bt: ' + str(alpha_2_ok_tot[0]/dataset['n_it']*100) + '%\n'
+        log_str += '- method2_beta_bt: ' + str(beta_2_ok_tot[0]/dataset['n_it']*100) + '%\n'
+        log_str += '- method2_mu_bt: ' + str(mu_2_ok_tot[0]/dataset['n_it']*100) + '%\n'
+        logger.info(log_str)
 
     
 def confidence_int_3(param, dataset, comm):
-    
+
+    logger=logging.getLogger(param["logger"])
+
     dataset['cint_alpha_3'] = []
     dataset['cint_beta_3'] = []
     dataset['cint_mu_3'] = []
@@ -187,12 +197,16 @@ def confidence_int_3(param, dataset, comm):
     # print("mu cint 3: ", dataset['cint_mu_3'])
 
     if param['rank'] ==0:
-        print('alpha_3_ok: ', alpha_3_ok_tot/dataset['n_it']*100, '%')
-        print('beta_3_ok: ', beta_3_ok_tot/dataset['n_it']*100, '%')
-        print('mu_3_ok: ', mu_3_ok_tot/dataset['n_it']*100, '%')
+        log_string = '\n- method3_alpha_bt: '+ str(alpha_3_ok_tot[0]/dataset['n_it']*100) + '%\n'
+        log_string += '- method3_beta_bt:   '+ str(beta_3_ok_tot[0]/dataset['n_it']*100) + '%\n'
+        log_string += '- method3_mu_bt:     '+ str(mu_3_ok_tot[0]/dataset['n_it']*100) + '%\n'
+
+        logger.info(log_string)
 
 
 def confidence_int_4(param, dataset, comm):
+
+    logger=logging.getLogger(param["logger"])
     
     dataset['cint_alpha_4'] = []
     dataset['cint_beta_4'] = []
@@ -248,9 +262,11 @@ def confidence_int_4(param, dataset, comm):
     # print("mu cint 4: ", dataset['cint_mu_4'])
 
     if param['rank'] ==0:
-        print('alpha_4_ok: ', alpha_4_ok_tot/dataset['n_it']*100, '%')
-        print('beta_4_ok: ', beta_4_ok_tot/dataset['n_it']*100, '%')
-        print('mu_4_ok: ', mu_4_ok_tot/dataset['n_it']*100, '%')
+        log_string = '\n- method4_alpha_bt: '+ str(alpha_4_ok_tot[0]/dataset['n_it']*100)+ '%\n'
+        log_string += '- method4_beta_bt: '+ str(beta_4_ok_tot[0]/dataset['n_it']*100)+ '%\n'
+        log_string += '- method4_mu_bt: '+ str(mu_4_ok_tot[0]/dataset['n_it']*100) +'%\n'
+
+        logger.info(log_string)
 
     
 def stderr_calc(param, dataset, comm):
