@@ -107,7 +107,7 @@ def simulator(param, dataset, comm):
         log_string += '- beta_asymptotic:  '+ str(100*beta_ok_tot[0]/n) + '%\n'
         log_string += "- Stderr calculation fails: " + str(ste_error_count_tot[0]) + '\n'
 
-        log_string += '- Theorical avg n of events: ' + nevents_format.format(n=avg_n_events_t) + '\n'
+        log_string += '- Theoretical avg n of events: ' + nevents_format.format(n=avg_n_events_t) + '\n'
         log_string += '- Avg n of events: ' + str(avg_n_events_p[0]) + '\n'
 
         log_string += ("- Avg time Hawkes: " + avgt_format.format(n=avg_t_sim) +"\n" + "- Avg time inference: "+ avgt_format.format(n=avg_t_est))

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3        
 
 #così sa già che deve usare python per eseguirlo, non devo più scrivere python3 genhawkes
-import logging
-from mpi4py import MPI
-import yaml
-import os
-import time
-
-from lib.inout import log
-from lib.inout import console
-from lib.inout import reader
-from lib.simulator import dataset
-
 
 def main():
+
+    import logging
+    from mpi4py import MPI
+    import yaml
+    import os
+    import time
+
+    from lib.inout import log
+    from lib.inout import console
+    from lib.inout import reader
+    from lib.simulator import dataset
 
     comm = MPI.COMM_WORLD #setta il comunicatore: tutti parlano con tutti
     size = comm.Get_size() #dice quanti processori stanno lavorando
