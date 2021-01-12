@@ -72,7 +72,7 @@ def main():
     tsave0 = MPI.Wtime()
     if "save_mc" in param["execution"]:
         from lib.inout import writer
-        comm.Barrier()
+        #comm.Barrier()
         writer.save_dataset(param, dataset)
     tsave_dset = MPI.Wtime() - tsave0
 
@@ -85,6 +85,7 @@ def main():
     if "bt" in param["execution"]:
         from lib.simulator import bootstrap
         bootstrap.bootstrap(param, dataset, comm)
+        comm.Barrier()
     tbt = MPI.Wtime() - tbt0
 
     if rank==0:
@@ -95,7 +96,6 @@ def main():
     tsave_bt0 = MPI.Wtime()
     if "save_bt" in param["execution"]:
         from lib.inout import writer
-        comm.Barrier()
         writer.save_bootstrap(param, dataset)
     tsave_bt = MPI.Wtime() - tsave_bt0
 
