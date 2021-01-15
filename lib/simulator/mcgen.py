@@ -22,10 +22,12 @@ def simulator(param, dataset, comm):
         np.random.seed(param["rank"] + t)
     
     i_local = 0
+
     t_sim = np.zeros(1)
     t_est = np.zeros(1)
     total_sim = np.zeros(1)
     total_est = np.zeros(1)
+
     mu_ok = np.zeros(1)
     alpha_ok = np.zeros(1)
     beta_ok = np.zeros(1)
@@ -34,54 +36,71 @@ def simulator(param, dataset, comm):
     alpha_ok_tot = np.zeros(1)
     beta_ok_tot = np.zeros(1)
     n_events_tot = np.zeros(1)
+
     alpha_out = np.zeros(1)
     beta_out = np.zeros(1)
     mu_out = np.zeros(1)
     br_out = np.zeros(1)
+    discarded = np.zeros(1)
     alpha_out_tot = np.zeros(1)
     beta_out_tot = np.zeros(1)
     mu_out_tot = np.zeros(1)
     br_out_tot = np.zeros(1)
+    discarded_tot = np.zeros(1)
     ste_error_count = np.zeros(1)
     ste_error_count_tot = np.zeros(1)
+
     opt = ['stderr']
+    keep = False
 
     for i in dataset['id']:
+        
+        while keep == False:
 
-        t_sim0 = MPI.Wtime()
-        hsim = hawkes(param)
-        t_sim[0] += MPI.Wtime() - t_sim0
-        n_events[0] += len(hsim)
+            keep = True
 
+            t_sim0 = MPI.Wtime()
+            hsim = hawkes(param)
+            t_sim[0] += MPI.Wtime() - t_sim0
+            n_events[0] += len(hsim)
 
-        t_est0 = MPI.Wtime()
-        model = inference(hsim, param, opt) #prima mettevamo anche i, tolto
-        t_est[0] += MPI.Wtime() - t_est0
+            t_est0 = MPI.Wtime()
+            model = inference(hsim, param, opt) #prima mettevamo anche i, tolto
+            t_est[0] += MPI.Wtime() - t_est0
 
-        ste_error_count[0] += model.count_err
+            ste_error_count[0] += model.count_err
 
-        log_output = "iteration " + str(i) + "\n"
-        log_output += "parameter: "+ str(model.parameter) + "\n"
-        log_output += "branching ratio: " + str(model.br) + "\n" # the branching ratio
-        log_output += "log-likelihood:" + str(model.L) + "\n" # the log-likelihood of the estimated parameter values
-        logger.debug(log_output)
+            #Parameters check
+            if (model.parameter['alpha'] < 0 and model.parameter['beta'] > 0):
+                alpha_out[0] +=1
+                keep = False
+            if model.parameter['beta'] < 0:
+                beta_out[0] += 1
+                keep = False
+            if model.parameter['alpha'] > 1:
+                br_out[0] += 1
+                keep = False
+            if model.parameter['mu'] > 1:
+                mu_out[0] += 1
+                keep = False
+            if model.count_err != 0:
+                keep = False
+            if keep == False:
+                discarded += 1
+            
 
         dataset['t'].append(hsim)
         dataset['alpha'][i_local] = model.parameter['alpha']
         dataset['beta'][i_local] = model.parameter['beta']
         dataset['mu'][i_local] = model.parameter['mu']
         dataset['stderr'].append(model.stderr)
-
-        #Parameters check
-        if (dataset['alpha'][i_local] < 0 and dataset['beta'][i_local] > 0):
-            alpha_out[0] +=1
-        if dataset['beta'][i_local] < 0:
-            beta_out[0] += 1
-        if dataset['alpha'][i_local] >1:
-            br_out[0] += 1
-        if dataset['mu'][i_local] >1:
-            mu_out[0] += 1
         
+        log_output = "iteration " + str(i) + "\n"
+        log_output += "parameter: "+ str(model.parameter) + "\n"
+        log_output += "branching ratio: " + str(model.br) + "\n" # the branching ratio
+        log_output += "log-likelihood:" + str(model.L) + "\n" # the log-likelihood of the estimated parameter values
+        logger.debug(log_output)
+
         mu_upper_lim = dataset['mu'][i_local]+1.96*dataset['stderr'][i_local][0]
         mu_lower_lim = dataset['mu'][i_local]-1.96*dataset['stderr'][i_local][0]
 
@@ -109,6 +128,7 @@ def simulator(param, dataset, comm):
     comm.Reduce(beta_out, beta_out_tot, op=MPI.SUM, root=0) 
     comm.Reduce(mu_out, mu_out_tot, op=MPI.SUM, root=0) 
     comm.Reduce(br_out, br_out_tot, op=MPI.SUM, root=0) 
+    comm.Reduce(discarded, discarded_tot, op=MPI.SUM, root=0) 
     
     avg_t_sim_loc = t_sim/i_local
     avg_t_est_loc = t_est/i_local
@@ -133,6 +153,7 @@ def simulator(param, dataset, comm):
         log_string += '- mu out of bound:  '+ str(100*mu_out_tot[0]/n) + '%\n'
         log_string += '- alpha (br) out of bound:  '+ str(100*br_out_tot[0]/n) + '%\n'
         log_string += "- Stderr calculation fails: " + str(ste_error_count_tot[0]) + '\n'
+        log_string += '- discarded samples:  '+ str(100*discarded_tot[0]/n) + '%\n'
 
         log_string += '\n- Theoretical avg n of events: ' + nevents_format.format(n=avg_n_events_t) + '\n'
         log_string += '- Avg n of events: ' + nevents_format.format(n=avg_n_events_p[0]) + '\n'
@@ -140,6 +161,7 @@ def simulator(param, dataset, comm):
         log_string += ("- Avg time Hawkes: " + avgt_format.format(n=avg_t_sim) +"\n" + "- Avg time inference: "+ avgt_format.format(n=avg_t_est))
 
         logger.info(log_string)
+
 
 
 def hawkes(param):
