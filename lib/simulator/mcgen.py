@@ -34,6 +34,14 @@ def simulator(param, dataset, comm):
     alpha_ok_tot = np.zeros(1)
     beta_ok_tot = np.zeros(1)
     n_events_tot = np.zeros(1)
+    alpha_out = np.zeros(1)
+    beta_out = np.zeros(1)
+    mu_out = np.zeros(1)
+    br_out = np.zeros(1)
+    alpha_out_tot = np.zeros(1)
+    beta_out_tot = np.zeros(1)
+    mu_out_tot = np.zeros(1)
+    br_out_tot = np.zeros(1)
     ste_error_count = np.zeros(1)
     ste_error_count_tot = np.zeros(1)
     opt = ['stderr']
@@ -63,6 +71,16 @@ def simulator(param, dataset, comm):
         dataset['beta'][i_local] = model.parameter['beta']
         dataset['mu'][i_local] = model.parameter['mu']
         dataset['stderr'].append(model.stderr)
+
+        #Parameters check
+        if (dataset['alpha'][i_local] > 0 and dataset['beta'][i_local] > 0):
+            alpha_out[0] +=1
+        if dataset['beta'][i_local] < 0:
+            beta_out[0] += 1
+        if dataset['alpha'][i_local] >1:
+            br_out[0] += 1
+        if dataset['mu'][i_local] >1:
+            mu_out[0] += 1
         
         mu_upper_lim = dataset['mu'][i_local]+1.96*dataset['stderr'][i_local][0]
         mu_lower_lim = dataset['mu'][i_local]-1.96*dataset['stderr'][i_local][0]
@@ -85,7 +103,12 @@ def simulator(param, dataset, comm):
     comm.Reduce(alpha_ok, alpha_ok_tot, op=MPI.SUM, root=0)
     comm.Reduce(beta_ok, beta_ok_tot, op=MPI.SUM, root=0)
     comm.Reduce(n_events, n_events_tot, op=MPI.SUM, root=0) 
-    comm.Reduce(ste_error_count, ste_error_count_tot, op=MPI.SUM, root=0)    
+
+    comm.Reduce(ste_error_count, ste_error_count_tot, op=MPI.SUM, root=0)   
+    comm.Reduce(alpha_out, alpha_out_tot, op=MPI.SUM, root=0)    
+    comm.Reduce(beta_out, beta_out_tot, op=MPI.SUM, root=0) 
+    comm.Reduce(mu_out, mu_out_tot, op=MPI.SUM, root=0) 
+    comm.Reduce(br_out, br_out_tot, op=MPI.SUM, root=0) 
     
     avg_t_sim_loc = t_sim/i_local
     avg_t_est_loc = t_est/i_local
@@ -105,9 +128,13 @@ def simulator(param, dataset, comm):
         log_string = '\n- mu_asymptotic:    ' + str(100*mu_ok_tot[0]/param['n']) + '%\n'
         log_string += '- alpha_asymptotic: ' + str(100*alpha_ok_tot[0]/param['n']) + '%\n'
         log_string += '- beta_asymptotic:  '+ str(100*beta_ok_tot[0]/n) + '%\n'
+        log_string += '\n- alpha* out of bound:  '+ str(100*alpha_out_tot[0]/n) + '%\n'
+        log_string += '- beta out of bound:  '+ str(100*beta_out_tot[0]/n) + '%\n'
+        log_string += '- mu out of bound:  '+ str(100*mu_out_tot[0]/n) + '%\n'
+        log_string += '- alpha (br) out of bound:  '+ str(100*br_out_tot[0]/n) + '%\n'
         log_string += "- Stderr calculation fails: " + str(ste_error_count_tot[0]) + '\n'
 
-        log_string += '- Theoretical avg n of events: ' + nevents_format.format(n=avg_n_events_t) + '\n'
+        log_string += '\n- Theoretical avg n of events: ' + nevents_format.format(n=avg_n_events_t) + '\n'
         log_string += '- Avg n of events: ' + nevents_format.format(n=avg_n_events_p[0]) + '\n'
 
         log_string += ("- Avg time Hawkes: " + avgt_format.format(n=avg_t_sim) +"\n" + "- Avg time inference: "+ avgt_format.format(n=avg_t_est))

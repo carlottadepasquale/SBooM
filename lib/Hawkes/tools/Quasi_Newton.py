@@ -169,11 +169,14 @@ def Quasi_Newton(model,prior=[],merge=[],opt=[]):
     ste = [0.0, 0.0, 0.0]
     count_err = 0
     if 'stderr' in opt:
-        try:
-            ste = EstimationError(model,para,prior)
-        except:
-            count_err += 1
-              
+        with np.errstate(invalid='raise'):
+            try:
+                ste = EstimationError(model,para,prior)
+                print('QN ste:', ste)
+            except FloatingPointError:
+                count_err += 1
+                print('QN count_err:', count_err)
+                
 
     ###OPTION: Check map solution
     if 'check' in opt:
