@@ -73,7 +73,7 @@ def simulator(param, dataset, comm):
         dataset['stderr'].append(model.stderr)
 
         #Parameters check
-        if (dataset['alpha'][i_local] > 0 and dataset['beta'][i_local] > 0):
+        if (dataset['alpha'][i_local] < 0 and dataset['beta'][i_local] > 0):
             alpha_out[0] +=1
         if dataset['beta'][i_local] < 0:
             beta_out[0] += 1
