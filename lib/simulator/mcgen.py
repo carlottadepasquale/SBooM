@@ -62,7 +62,6 @@ def simulator(param, dataset, comm):
             t_sim0 = MPI.Wtime()
             hsim = hawkes(param)
             t_sim[0] += MPI.Wtime() - t_sim0
-            n_events[0] += len(hsim)
 
             t_est0 = MPI.Wtime()
             model = inference(hsim, param, opt) #prima mettevamo anche i, tolto
@@ -88,6 +87,8 @@ def simulator(param, dataset, comm):
             if keep == False:
                 discarded += 1
             
+        n_events[0] += len(hsim)
+        #logger.info('n_events' + str(n_events))
 
         dataset['t'].append(hsim)
         dataset['alpha'][i_local] = model.parameter['alpha']
@@ -117,6 +118,8 @@ def simulator(param, dataset, comm):
         if (beta_upper_lim >= param['beta'] and beta_lower_lim <= param['beta']):
             beta_ok[0] += 1
         i_local += 1
+        
+    #logger.info('n_events: ' + str(n_events))
 
     comm.Reduce(mu_ok, mu_ok_tot, op=MPI.SUM, root=0)
     comm.Reduce(alpha_ok, alpha_ok_tot, op=MPI.SUM, root=0)
@@ -145,8 +148,8 @@ def simulator(param, dataset, comm):
 
         nevents_format = "{n:.1f}"
         avgt_format = "{n:.5f}"
-        log_string = '\n- mu_asymptotic:    ' + str(100*mu_ok_tot[0]/param['n']) + '%\n'
-        log_string += '- alpha_asymptotic: ' + str(100*alpha_ok_tot[0]/param['n']) + '%\n'
+        log_string = '\n- mu_asymptotic:    ' + str(100*mu_ok_tot[0]/n) + '%\n'
+        log_string += '- alpha_asymptotic: ' + str(100*alpha_ok_tot[0]/n) + '%\n'
         log_string += '- beta_asymptotic:  '+ str(100*beta_ok_tot[0]/n) + '%\n'
         log_string += '\n- alpha* out of bound:  '+ str(100*alpha_out_tot[0]/n) + '%\n'
         log_string += '- beta out of bound:  '+ str(100*beta_out_tot[0]/n) + '%\n'
