@@ -29,14 +29,23 @@ def bootstrap(param, dataset, comm):
         b_i = 0
         dataset['bootstrap'].append({'alpha': np.zeros(bt), 'beta': np.zeros(bt) , 'mu': np.zeros(bt)}) 
         opt = ['nostderr']
+        keep = False
+        discard_bt = np.zeros(1)
         for b in range(bt):
-            hsim_bt = mcgen.hawkes(param_bt)
-            model_bt = mcgen.inference(hsim_bt, param, opt)
+            while keep == False:
+                hsim_bt = mcgen.hawkes(param_bt)
+                model_bt = mcgen.inference(hsim_bt, param, opt)
+
+                keep = mcgen.parameter_check(model_bt, 'bt')
+                if keep == False:
+                    discard_bt[0] += 1
+
             dataset['bootstrap'][j_local]['alpha'][b_i] = model_bt.parameter['alpha']
             dataset['bootstrap'][j_local]['beta'][b_i] = model_bt.parameter['beta']
             dataset['bootstrap'][j_local]['mu'][b_i] = model_bt.parameter['mu']
             b_i += 1
         j_local += 1
+        #logger.info("discarded_bt: " + str(discard_bt[0]))
         #print("dset_bt: ", dataset['bootstrap'])
     
 def confidence_int_1(param, dataset, comm):

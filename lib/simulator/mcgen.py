@@ -57,8 +57,6 @@ def simulator(param, dataset, comm):
         
         while keep == False:
 
-            keep = True
-
             t_sim0 = MPI.Wtime()
             hsim = hawkes(param)
             t_sim[0] += MPI.Wtime() - t_sim0
@@ -70,20 +68,7 @@ def simulator(param, dataset, comm):
             ste_error_count[0] += model.count_err
 
             #Parameters check
-            if (model.parameter['alpha'] < 0 and model.parameter['beta'] > 0):
-                alpha_out[0] +=1
-                keep = False
-            if model.parameter['beta'] < 0:
-                beta_out[0] += 1
-                keep = False
-            if model.parameter['alpha'] > 1:
-                br_out[0] += 1
-                keep = False
-            if model.parameter['mu'] > 1:
-                mu_out[0] += 1
-                keep = False
-            if model.count_err != 0:
-                keep = False
+            keep = parameter_check(model, 'mc', br_out, alpha_out, beta_out, mu_out)
             if keep == False:
                 discarded += 1
             
@@ -165,7 +150,24 @@ def simulator(param, dataset, comm):
 
         logger.info(log_string)
 
+def parameter_check(model, call, br_out=[0], alpha_out=[0], beta_out=[0], mu_out=[0]):
+    keep=True
+    if (model.parameter['alpha'] < 0 and model.parameter['beta'] > 0):
+        alpha_out[0] +=1
+        keep = False
+    if model.parameter['beta'] < 0:
+        beta_out[0] += 1
+        keep = False
+    if model.parameter['alpha'] > 1:
+        br_out[0] += 1
+        keep = False
+    if model.parameter['mu'] > 1:
+        mu_out[0] += 1
+        keep = False
+    if (model.count_err != 0 and call == "mc"):
+        keep = False
 
+    return keep
 
 def hawkes(param):
 
