@@ -173,7 +173,7 @@ def Quasi_Newton(model,prior=[],merge=[],opt=[]):
             try:
                 ste = EstimationError(model,para,prior)
                 #print('QN ste:', ste)
-            except FloatingPointError:
+            except (FloatingPointError, np.linalg.LinAlgError):
                 count_err += 1
                 #print('QN count_err:', count_err)
                 
