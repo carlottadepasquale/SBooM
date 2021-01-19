@@ -51,10 +51,11 @@ def simulator(param, dataset, comm):
     ste_error_count_tot = np.zeros(1)
 
     opt = ['stderr']
-    keep = False
 
     for i in dataset['id']:
         
+        keep = False
+
         while keep == False:
 
             t_sim0 = MPI.Wtime()

@@ -29,9 +29,11 @@ def bootstrap(param, dataset, comm):
         b_i = 0
         dataset['bootstrap'].append({'alpha': np.zeros(bt), 'beta': np.zeros(bt) , 'mu': np.zeros(bt)}) 
         opt = ['nostderr']
-        keep = False
         discard_bt = np.zeros(1)
         for b in range(bt):
+
+            keep = False
+
             while keep == False:
                 hsim_bt = mcgen.hawkes(param_bt)
                 model_bt = mcgen.inference(hsim_bt, param, opt)
