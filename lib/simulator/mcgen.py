@@ -165,8 +165,8 @@ def parameter_check(model, call, br_out=[0], alpha_out=[0], beta_out=[0], mu_out
     if model.parameter['mu'] > 1:
         mu_out[0] += 1
         keep = False
-    if (model.count_err != 0 and call == "mc"):
-        keep = False
+    # if (model.count_err != 0 and call == "mc"):
+    #     keep = False
 
     return keep
 
