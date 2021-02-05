@@ -143,6 +143,7 @@ def main():
         log_str += ("Number of iterations: "+ str(param["n"]) + '\n')
         log_str += ("Hawkes T: "+ str(param["t"]) + '\n')
         log_str += ("Number of bootstrap it: "+ str(param["bt"]) + '\n')
+        log_str += ("alpha, beta, mu: "+ str(param["alpha"]) +"   "+ str(param["beta"])+"   " + str(param["mu"]) +'\n')
         logger.critical(log_str)
         logger.critical("Time to solution: "+ time_format.format(t=tts) ) 
         logger.critical("END Mchawkes.py")
