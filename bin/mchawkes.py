@@ -128,6 +128,10 @@ def main():
         from lib.simulator import bootstrap
         bootstrap.confidence_int_4(param, dataset, comm)
 
+    if "cint5" in param["execution"]:
+        from lib.simulator import bootstrap
+        bootstrap.confidence_int_5(param, dataset, comm)
+
     tcint = MPI.Wtime() - tcint0
 
     if rank==0:

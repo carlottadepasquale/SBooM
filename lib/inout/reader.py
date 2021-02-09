@@ -65,8 +65,8 @@ def read_dataset(param):
 
 
         if ('cint1' in param['execution'] or 'cint2' in param['execution'] or \
-            'cint3' in param['execution'] or 'cint4' in param['execution'] ) \
-                and 'bt' not in param['execution']:
+            'cint3' in param['execution'] or 'cint4' in param['execution'] or \
+            'cint5' in param['execution'] ) and 'bt' not in param['execution']:
             name_dict = "Bootstrap_" + str(param['bt'])
             hdf5_filename_mc = input_dir+"mc_dataset_"
             hdf5_filename_bt = input_dir + "bt_" + str(param['bt']) + "/bt_dataset_"
