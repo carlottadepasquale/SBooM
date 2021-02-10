@@ -216,6 +216,7 @@ def confidence_int_3(param, dataset, comm):
         log_string += '- method3_mu_bt:     '+ cint_format.format(t=(mu_3_ok_tot[0]/dataset['n_it']*100)) + '%\n'
 
         logger.info(log_string)
+    
 
 
 def confidence_int_4(param, dataset, comm):
@@ -283,6 +284,62 @@ def confidence_int_4(param, dataset, comm):
 
         logger.info(log_string)
 
+def confidence_int_5(param, dataset, comm):
+
+    logger=logging.getLogger(param["logger"])
+    cint_format = "{t:.3f}"
+
+    dataset['cint_alpha_5'] = []
+    dataset['cint_beta_5'] = []
+    dataset['cint_mu_5'] = []
+    
+    stderr_a_boot, stderr_b_boot, stderr_m_boot = stderr_boot(param, dataset, comm)
+    
+    alpha_5_ok = np.zeros(1)
+    beta_5_ok = np.zeros(1)
+    mu_5_ok = np.zeros(1)
+    mu_5_ok_tot = np.zeros(1)
+    alpha_5_ok_tot = np.zeros(1)
+    beta_5_ok_tot = np.zeros(1)
+    i_loc = 0
+    for i in dataset['id']:
+        
+        q1alpha = dataset['alpha'][i_loc] - 1.96*stderr_a_boot[i_loc]
+        q2alpha = dataset['alpha'][i_loc] + 1.96*stderr_a_boot[i_loc]
+        q1beta = dataset['beta'][i_loc] - 1.96*stderr_b_boot[i_loc]
+        q2beta = dataset['beta'][i_loc] + 1.96*stderr_b_boot[i_loc]
+        q1mu = dataset['mu'][i_loc] - 1.96*stderr_m_boot[i_loc]
+        q2mu = dataset['mu'][i_loc] + 1.96*stderr_m_boot[i_loc]
+
+        dataset['cint_alpha_5'].append([q1alpha, q2alpha])
+        dataset['cint_beta_5'].append([q1beta, q2beta])
+        dataset['cint_mu_5'].append([q1mu, q2mu ])
+        
+        if (q2mu >= param['mu'] and q1mu <= param['mu']):
+            mu_5_ok[0] += 1
+        if (q2alpha >= param['alpha'] and q1alpha <= param['alpha']):
+            #print(i, 'alpha: ', dataset['bootstrap'][i_loc]['alpha'], "confidence int: ", dataset['cint_alpha_3'][-1])
+            alpha_5_ok[0] += 1
+        if (q2beta >= param['beta'] and q1beta <= param['beta']):
+            beta_5_ok[0] += 1
+        
+        i_loc += 1
+    
+    comm.Reduce(mu_5_ok, mu_5_ok_tot, op=MPI.SUM, root=0)
+    comm.Reduce(alpha_5_ok, alpha_5_ok_tot, op=MPI.SUM, root=0)
+    comm.Reduce(beta_5_ok, beta_5_ok_tot, op=MPI.SUM, root=0) 
+
+    # print("alpha cint 3: ", dataset['cint_alpha_3'])
+    # print("beta cint 3: ", dataset['cint_beta_3'])
+    # print("mu cint 3: ", dataset['cint_mu_3'])
+
+    if param['rank'] ==0:
+        log_string = '\n- method5_alpha_bt: '+ cint_format.format(t=(alpha_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        log_string += '- method5_beta_bt:   '+ cint_format.format(t=(beta_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        log_string += '- method5_mu_bt:     '+ cint_format.format(t=(mu_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+
+        logger.info(log_string)
+    
     
 def stderr_calc(param, dataset, comm):
     i_loc = 0
@@ -294,5 +351,24 @@ def stderr_calc(param, dataset, comm):
         stderr_b_bt[i_loc] = np.std(dataset['bootstrap'][i_loc]['beta'], ddof=1) / np.sqrt(param['bt'])
         stderr_m_bt[i_loc] = np.std(dataset['bootstrap'][i_loc]['mu'], ddof=1) / np.sqrt(param['bt'])
         i_loc += 1
-
     return [stderr_a_bt, stderr_b_bt, stderr_m_bt]
+
+def stderr_boot(param, dataset, comm):
+    i_loc = 0
+    stderr_a_boot = np.empty(dataset['n_local'])
+    stderr_b_boot = np.empty(dataset['n_local'])
+    stderr_m_boot = np.empty(dataset['n_local'])
+    for i in dataset['id']:
+        b = 0
+        alpha_sum = 0
+        beta_sum = 0
+        mu_sum = 0
+        for b in range(param['bt']):
+            alpha_sum += (dataset['bootstrap'][i_loc]['alpha'][b] - np.mean(dataset['bootstrap'][i_loc]['alpha']))**2
+            beta_sum += (dataset['bootstrap'][i_loc]['beta'][b] - np.mean(dataset['bootstrap'][i_loc]['beta']))**2
+            mu_sum += (dataset['bootstrap'][i_loc]['mu'][b] - np.mean(dataset['bootstrap'][i_loc]['mu']))**2
+        stderr_a_boot[i_loc] = alpha_sum/param['bt']
+        stderr_b_boot[i_loc] = beta_sum/param['bt']
+        stderr_m_boot[i_loc] = mu_sum/param['bt']
+        i_loc += 1
+    return [stderr_a_boot, stderr_b_boot, stderr_m_boot]
