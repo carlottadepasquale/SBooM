@@ -23,8 +23,8 @@ def main():
     tts0 = MPI.Wtime()
 
 
+    time_format = "{t:.3f} s"
     if rank==0:
-        time_format = "{t:.3f} s"
         console_param = console.init()
         path_file_param_default = os.path.expandvars("$BMCH_HOME") + "/etc/default/mcconfig.yaml" #expandvars mi ritorna il contenuto della variabile d'ambiente
         path_file_param_sec = os.path.expandvars("$BMCH_HOME") + "/etc/mcconfig.yaml"
@@ -88,7 +88,7 @@ def main():
         time_barr_bt0= MPI.Wtime()
         comm.Barrier()
         time_barr_bt= MPI.Wtime()-time_barr_bt0
-        log.critical(str(time_barr_bt))
+        logger.critical(str(rank) +"   "+ time_format.format(t=time_barr_bt))
     tbt = MPI.Wtime() - tbt0
 
     if rank==0:
