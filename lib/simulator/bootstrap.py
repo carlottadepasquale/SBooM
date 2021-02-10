@@ -68,13 +68,13 @@ def confidence_int_1(param, dataset, comm):
     beta_1_ok_tot = np.zeros(1)
 
     for i in dataset['id']:
-        q1alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.05)
-        q1beta = np.quantile(dataset['bootstrap'][i_loc]['beta'], 0.05)
-        q1mu = np.quantile(dataset['bootstrap'][i_loc]['mu'], 0.05)
+        q1alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.025)
+        q1beta = np.quantile(dataset['bootstrap'][i_loc]['beta'], 0.025)
+        q1mu = np.quantile(dataset['bootstrap'][i_loc]['mu'], 0.025)
 
-        q2alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.95)
-        q2beta = np.quantile(dataset['bootstrap'][i_loc]['beta'], 0.95)
-        q2mu = np.quantile(dataset['bootstrap'][i_loc]['mu'], 0.95)
+        q2alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.975)
+        q2beta = np.quantile(dataset['bootstrap'][i_loc]['beta'], 0.975)
+        q2mu = np.quantile(dataset['bootstrap'][i_loc]['mu'], 0.975)
 
         dataset['cint_alpha_1'].append([q1alpha, q2alpha])
         dataset['cint_beta_1'].append([q1beta, q2beta])
@@ -123,13 +123,13 @@ def confidence_int_2(param, dataset, comm):
     i_loc = 0
     for i in dataset['id']:
         
-        q1alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.05)
-        q1beta = np.quantile(dataset['bootstrap'][i_loc]['beta'], 0.05)
-        q1mu = np.quantile(dataset['bootstrap'][i_loc]['mu'], 0.05)
+        q1alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.025)
+        q1beta = np.quantile(dataset['bootstrap'][i_loc]['beta'], 0.025)
+        q1mu = np.quantile(dataset['bootstrap'][i_loc]['mu'], 0.025)
 
-        q2alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.95)
-        q2beta = np.quantile(dataset['bootstrap'][i_loc]['beta'], 0.95)
-        q2mu = np.quantile(dataset['bootstrap'][i_loc]['mu'], 0.95)
+        q2alpha = np.quantile(dataset['bootstrap'][i_loc]['alpha'], 0.975)
+        q2beta = np.quantile(dataset['bootstrap'][i_loc]['beta'], 0.975)
+        q2mu = np.quantile(dataset['bootstrap'][i_loc]['mu'], 0.975)
 
         dataset['cint_alpha_2'].append([2*dataset['alpha'][i_loc]-q2alpha, 2*dataset['alpha'][i_loc]-q1alpha])
         dataset['cint_beta_2'].append([2*dataset['beta'][i_loc]-q2beta, 2*dataset['beta'][i_loc]-q1beta])
@@ -245,13 +245,13 @@ def confidence_int_4(param, dataset, comm):
         
         #print('std_alpha:', standardized_alpha_bt)
 
-        q1alpha = np.quantile(standardized_alpha_bt, 0.05)
-        q1beta = np.quantile(standardized_beta_bt, 0.05)
-        q1mu = np.quantile(standardized_mu_bt, 0.05)
+        q1alpha = np.quantile(standardized_alpha_bt, 0.025)
+        q1beta = np.quantile(standardized_beta_bt, 0.025)
+        q1mu = np.quantile(standardized_mu_bt, 0.025)
 
-        q2alpha = np.quantile(standardized_alpha_bt, 0.95)
-        q2beta = np.quantile(standardized_beta_bt, 0.95)
-        q2mu = np.quantile(standardized_mu_bt, 0.95)
+        q2alpha = np.quantile(standardized_alpha_bt, 0.975)
+        q2beta = np.quantile(standardized_beta_bt, 0.975)
+        q2mu = np.quantile(standardized_mu_bt, 0.975)
         # print('q1a:', q2alpha)
         # print('q1b:', q2beta)
         # print('q1m:', q2mu)

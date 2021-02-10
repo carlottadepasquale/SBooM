@@ -85,7 +85,10 @@ def main():
     if "bt" in param["execution"]:
         from lib.simulator import bootstrap
         bootstrap.bootstrap(param, dataset, comm)
+        time_barr_bt0= MPI.Wtime()
         comm.Barrier()
+        time_barr_bt= MPI.Wtime()-time_barr_bt0
+        log.critical(str(time_barr_bt))
     tbt = MPI.Wtime() - tbt0
 
     if rank==0:
