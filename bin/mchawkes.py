@@ -141,6 +141,10 @@ def main():
         logger.critical("Confidence intervals time: "+ time_format.format(t=tcint)) 
 
     ####################
+    if "plt1" in param["execution"]:
+        from lib.inout import plot
+        plot.plot_cint(param, dataset, comm)
+    ####################
 
     tts = MPI.Wtime() - tts0
 

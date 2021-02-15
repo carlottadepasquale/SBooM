@@ -78,6 +78,62 @@ def plot_estimate(param, dataset, comm):
         # mplt = sns.displot(mu_all, kind='hist')
         # #sns.distplot(mu_all, hist=False, kde=True, color = 'm', kde_kws={'linewidth': 4})
         # mplt.savefig("muh.png")
+
+def plot_cint(param, dataset, comm):
+    logger=logging.getLogger(param["logger"])
+    alpha_all = np.zeros(param['n'])
+    beta_all = np.zeros(param['n'])
+    mu_all = np.zeros(param['n'])
+    
+    count = np.zeros(param['size'])
+    displ = np.zeros(param['size'])
+    
+    if param['rank']==0:
+        c = 0
+        r = 0
+        for i in range(param['size']):
+            count[c] = dataset['n_local']
+            displ[c] = dataset['n_local'] * r
+            c += 1
+            r += 1
+        count[param['size'] - 1] = dataset['n_local'] + (param['n'] % param['size'])
+        print(param['rank'], ' count: ', count, ' displ: ', displ)
+    
+    comm.Gatherv(dataset['alpha'], [alpha_all, count, displ, MPI.DOUBLE], root = 0)
+    comm.Gatherv(dataset['beta'], [beta_all, count, displ, MPI.DOUBLE], root = 0)
+    comm.Gatherv(dataset['mu'], [mu_all, count, displ, MPI.DOUBLE], root = 0)
+
+    if param['rank'] == 0:
+            
+        x_pos = np.arange(len(dataset['alpha']))
+        print('x_pos', x_pos)
+        estimate = dataset['alpha']
+        cint_array = np.array(dataset['cint_alpha_1'])
+        #array_err = np.transpose(cint_array)
+        print('cint_array', cint_array, cint_array.shape)
+        #error = cint_array[:,1]-param['alpha']
+        #stderr=dataset['stderr'][1][:]
+        error=[]
+        for i in range(dataset['n_local']):
+            error.append([(dataset['alpha'][i]-cint_array[i][0]),(cint_array[i][1] - dataset['alpha'][i])])
+        error_arr=np.transpose(np.array(error))
+
+        fig, ax = plt.subplots()
+        ax.bar(x_pos, estimate, yerr=error_arr, align='center', alpha=0.5, ecolor='black', capsize=10)
+        ax.set_ylabel('Confidence Interval')
+        #ax.set_xticks(x_pos)
+        #ax.set_xticklabels(materials)
+        #ax.set_title('Bootstrap Confidence intercals')
+        ax.yaxis.grid(True)
+        
+        plt.tight_layout()
+        plt.savefig('bar_plot_with_error_bars.png')
+        plt.show()
+        
+        # plt_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
+        # plt_name = plt_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" + "allplts.png"
+        # fig.savefig(plt_name)
+        # logger.info("Plot saved in " + str(plt_name))
         
 
     
