@@ -111,17 +111,17 @@ def plot_cint(param, dataset, comm):
         cint_array = np.array(dataset['cint_alpha_1'])
         print('cint_array', cint_array, cint_array.shape)
         error=[]
-        for i in range(dataset['n_local']):
-            error.append([(dataset['alpha'][i]-cint_array[i][0]),(cint_array[i][1] - dataset['alpha'][i])])
+        i_loc = 0
+        for i in  dataset['id']:                  #range(dataset['n_local']):
+            error.append([(dataset['alpha'][i_loc]-cint_array[i_loc][0]),(cint_array[i_loc][1] - dataset['alpha'][i_loc])])
+            i_loc += 1
         error_arr=np.transpose(np.array(error))
 
         stderr_alpha = []
-        for j in range(dataset['n_local']):
-            stderr_alpha.append(dataset['stderr'][j][1]/2)
-
-        print('stderr', stderr_alpha)
-        error_prova = [0.2, 0.2, 0.2]
-        x_pos_err = x_pos -0.1
+        j_loc = 0
+        for j in dataset['id']:
+            stderr_alpha.append(dataset['stderr'][j_loc][1]/2)
+            j_loc +=1
 
         fig, ax = plt.subplots()
 
