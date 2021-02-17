@@ -84,30 +84,46 @@ def plot_cint(param, dataset, comm):
     logger=logging.getLogger(param["logger"])
 
     if param['rank'] == 0:
-            
-        x_pos = np.arange(len(dataset['alpha']))
-        x_pos_err = x_pos + 0.1
-        estimate = dataset['alpha']
-        cint_array = np.array(dataset['cint_alpha_1'])
         error=[]
-        i_loc = 0
-        for i in  dataset['id']:                  #range(dataset['n_local']):
-            error.append([(dataset['alpha'][i_loc]-cint_array[i_loc][0]),(cint_array[i_loc][1] - dataset['alpha'][i_loc])])
-            i_loc += 1
-        error_arr=np.transpose(np.array(error))
-
         stderr_alpha = []
+        cint_array = np.array(dataset['cint_alpha_1'])
+        i_loc = 0
         j_loc = 0
-        for j in dataset['id']:
 
-            stderr_alpha.append(dataset['stderr'][j_loc][1]/2)
-            j_loc +=1
+        if dataset['n_local'] >30:
+            for i in  range(30):                  #range(dataset['n_local']):
+                error.append([(dataset['alpha'][i_loc]-cint_array[i_loc][0]),(cint_array[i_loc][1] - dataset['alpha'][i_loc])])
+                i_loc += 1
+            error_arr=np.transpose(np.array(error))
+
+            for j in range(30):
+                stderr_alpha.append(dataset['stderr'][j_loc][1]/2)
+                j_loc +=1
+
+            estimate = []
+            for e in range(30):
+                estimate.append(dataset['alpha'][e])
+        
+        else:
+            for i in  dataset['id']:                  #range(dataset['n_local']):
+                error.append([(dataset['alpha'][i_loc]-cint_array[i_loc][0]),(cint_array[i_loc][1] - dataset['alpha'][i_loc])])
+                i_loc += 1
+            error_arr=np.transpose(np.array(error))
+
+            for j in dataset['id']:
+                stderr_alpha.append(dataset['stderr'][j_loc][1]/2)
+                j_loc +=1
+            estimate = dataset['alpha']
+        
+        x_pos = np.arange(len(estimate))
+        x_pos_err = x_pos + 0.15
+        x_pos_stderr = x_pos-0.15
 
         fig, ax = plt.subplots()
 
         ax.bar(x_pos, estimate, align='center', alpha=0.5, ecolor='black', capsize=10)
-        ax.errorbar(x_pos, estimate, yerr=error_arr, alpha=0.5, elinewidth=1, linewidth=0, ecolor='black', capsize=1, color='white')
-        ax.errorbar(x_pos_err, estimate, yerr=stderr_alpha, elinewidth=1, linewidth=0, alpha=0.5, ecolor='blue', capsize=1, color='white')
+        ax.errorbar(x_pos_err, estimate, yerr=error_arr, alpha=0.5, elinewidth=1, linewidth=0, ecolor='black', capsize=1, color='white')
+        ax.errorbar(x_pos_stderr, estimate, yerr=stderr_alpha, elinewidth=1, linewidth=0, alpha=0.5, ecolor='blue', capsize=1, color='white')
         ax.set_ylabel('Confidence Interval')
         #ax.set_xticks(x_pos)
         #ax.set_xticklabels(materials)
