@@ -82,35 +82,13 @@ def plot_estimate(param, dataset, comm):
 
 def plot_cint(param, dataset, comm):
     logger=logging.getLogger(param["logger"])
-    alpha_all = np.zeros(param['n'])
-    beta_all = np.zeros(param['n'])
-    mu_all = np.zeros(param['n'])
-    
-    count = np.zeros(param['size'])
-    displ = np.zeros(param['size'])
-    
-    if param['rank']==0:
-        c = 0
-        r = 0
-        for i in range(param['size']):
-            count[c] = dataset['n_local']
-            displ[c] = dataset['n_local'] * r
-            c += 1
-            r += 1
-        count[param['size'] - 1] = dataset['n_local'] + (param['n'] % param['size'])
-    
-    comm.Gatherv(dataset['alpha'], [alpha_all, count, displ, MPI.DOUBLE], root = 0)
-    comm.Gatherv(dataset['beta'], [beta_all, count, displ, MPI.DOUBLE], root = 0)
-    comm.Gatherv(dataset['mu'], [mu_all, count, displ, MPI.DOUBLE], root = 0)
 
     if param['rank'] == 0:
             
         x_pos = np.arange(len(dataset['alpha']))
         x_pos_err = x_pos + 0.1
-        print('x_pos', x_pos)
         estimate = dataset['alpha']
         cint_array = np.array(dataset['cint_alpha_1'])
-        print('cint_array', cint_array, cint_array.shape)
         error=[]
         i_loc = 0
         for i in  dataset['id']:                  #range(dataset['n_local']):
@@ -128,8 +106,8 @@ def plot_cint(param, dataset, comm):
         fig, ax = plt.subplots()
 
         ax.bar(x_pos, estimate, align='center', alpha=0.5, ecolor='black', capsize=10)
-        ax.errorbar(x_pos, estimate, yerr=error_arr, alpha=0.5, elinewidth=1, linewidth=0, ecolor='black', capsize=10, color='white')
-        ax.errorbar(x_pos_err, estimate, yerr=stderr_alpha, elinewidth=1, linewidth=0, alpha=0.5, ecolor='blue', capsize=10, color='white')
+        ax.errorbar(x_pos, estimate, yerr=error_arr, alpha=0.5, elinewidth=1, linewidth=0, ecolor='black', capsize=1, color='white')
+        ax.errorbar(x_pos_err, estimate, yerr=stderr_alpha, elinewidth=1, linewidth=0, alpha=0.5, ecolor='blue', capsize=1, color='white')
         ax.set_ylabel('Confidence Interval')
         #ax.set_xticks(x_pos)
         #ax.set_xticklabels(materials)
