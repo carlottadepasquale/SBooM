@@ -106,6 +106,7 @@ def plot_cint(param, dataset, comm):
     if param['rank'] == 0:
             
         x_pos = np.arange(len(dataset['alpha']))
+        x_pos_err = x_pos + 0.1
         print('x_pos', x_pos)
         estimate = dataset['alpha']
         cint_array = np.array(dataset['cint_alpha_1'])
@@ -120,6 +121,7 @@ def plot_cint(param, dataset, comm):
         stderr_alpha = []
         j_loc = 0
         for j in dataset['id']:
+
             stderr_alpha.append(dataset['stderr'][j_loc][1]/2)
             j_loc +=1
 
