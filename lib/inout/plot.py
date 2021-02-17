@@ -97,7 +97,7 @@ def plot_cint(param, dataset, comm):
             error_arr=np.transpose(np.array(error))
 
             for j in range(30):
-                stderr_alpha.append(dataset['stderr'][j_loc][1]/2)
+                stderr_alpha.append(dataset['stderr'][j_loc][1])
                 j_loc +=1
 
             estimate = []
@@ -111,13 +111,16 @@ def plot_cint(param, dataset, comm):
             error_arr=np.transpose(np.array(error))
 
             for j in dataset['id']:
-                stderr_alpha.append(dataset['stderr'][j_loc][1]/2)
+                stderr_alpha.append(dataset['stderr'][j_loc][1])
                 j_loc +=1
             estimate = dataset['alpha']
         
         x_pos = np.arange(len(estimate))
         x_pos_err = x_pos + 0.15
         x_pos_stderr = x_pos-0.15
+
+        print('stderr', stderr_alpha)
+        print('cint', error_arr)
 
         fig, ax = plt.subplots()
 
