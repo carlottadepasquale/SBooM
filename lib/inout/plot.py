@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
 from mpi4py import MPI
+import os
 
 def plot_process(dataset):
     model.plot_l()
@@ -34,7 +35,7 @@ def plot_estimate(param, dataset, comm):
             c += 1
             r += 1
         count[param['size'] - 1] = dataset['n_local'] + (param['n'] % param['size'])
-        print(param['rank'], ' count: ', count, ' displ: ', displ)
+        #print(param['rank'], ' count: ', count, ' displ: ', displ)
     
     comm.Gatherv(dataset['alpha'], [alpha_all, count, displ, MPI.DOUBLE], root = 0)
     comm.Gatherv(dataset['beta'], [beta_all, count, displ, MPI.DOUBLE], root = 0)
@@ -97,7 +98,6 @@ def plot_cint(param, dataset, comm):
             c += 1
             r += 1
         count[param['size'] - 1] = dataset['n_local'] + (param['n'] % param['size'])
-        print(param['rank'], ' count: ', count, ' displ: ', displ)
     
     comm.Gatherv(dataset['alpha'], [alpha_all, count, displ, MPI.DOUBLE], root = 0)
     comm.Gatherv(dataset['beta'], [beta_all, count, displ, MPI.DOUBLE], root = 0)
@@ -138,12 +138,13 @@ def plot_cint(param, dataset, comm):
         
         plt.tight_layout()
         #plt.savefig('bar_plot_with_error_bars.png')
-        plt.show()
 
-        # plt_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
-        # plt_name = plt_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" + "allplts.png"
-        # fig.savefig(plt_name)
-        # logger.info("Plot saved in " + str(plt_name))
+        plt_name_a = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
+        plt_name_a = plt_name_a + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" 
+        os.makedirs(plt_name_a,  exist_ok=True)
+        plt.savefig(plt_name_a + "cint1alpha.png")
+        logger.info("Plot saved in " + str(plt_name_a) + "cint1alpha.png")
+        #plt.show()
         
 
     
