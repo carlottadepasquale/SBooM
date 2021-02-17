@@ -183,7 +183,6 @@ def rank_mapping(param, mcb_dataset, old_size, hdf5_filename, flag):
                     fr = h5py.File(hdf5_file, 'r')
                                     
                     for id in id_per_file[count_idx]:
-                        fill_dataset_mc(param, mcb_dataset, id, id_local, fr)
                         fill_dataset_bt(param, mcb_dataset, id, id_local, fr)
                         id_local += 1
                     count_idx += 1
