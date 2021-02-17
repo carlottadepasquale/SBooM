@@ -142,8 +142,9 @@ def plot_cint(param, dataset, comm):
         plt_name_a = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
         plt_name_a = plt_name_a + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" 
         os.makedirs(plt_name_a,  exist_ok=True)
-        plt.savefig(plt_name_a + "cint1alpha.png")
-        logger.info("Plot saved in " + str(plt_name_a) + "cint1alpha.png")
+        plt_name_a = plt_name_a + "cint1alpha.png"
+        plt.savefig(plt_name_a )
+        logger.info("Plot saved in " + str(plt_name_a))
         #plt.show()
         
 
