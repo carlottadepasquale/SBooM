@@ -109,17 +109,25 @@ def plot_cint(param, dataset, comm):
         print('x_pos', x_pos)
         estimate = dataset['alpha']
         cint_array = np.array(dataset['cint_alpha_1'])
-        #array_err = np.transpose(cint_array)
         print('cint_array', cint_array, cint_array.shape)
-        #error = cint_array[:,1]-param['alpha']
-        #stderr=dataset['stderr'][1][:]
         error=[]
         for i in range(dataset['n_local']):
             error.append([(dataset['alpha'][i]-cint_array[i][0]),(cint_array[i][1] - dataset['alpha'][i])])
         error_arr=np.transpose(np.array(error))
 
+        stderr_alpha = []
+        for j in range(dataset['n_local']):
+            stderr_alpha.append(dataset['stderr'][j][1]/2)
+
+        print('stderr', stderr_alpha)
+        error_prova = [0.2, 0.2, 0.2]
+        x_pos_err = x_pos -0.1
+
         fig, ax = plt.subplots()
-        ax.bar(x_pos, estimate, yerr=error_arr, align='center', alpha=0.5, ecolor='black', capsize=10)
+
+        ax.bar(x_pos, estimate, align='center', alpha=0.5, ecolor='black', capsize=10)
+        ax.errorbar(x_pos, estimate, yerr=error_arr, alpha=0.5, elinewidth=1, linewidth=0, ecolor='black', capsize=10, color='white')
+        ax.errorbar(x_pos_err, estimate, yerr=stderr_alpha, elinewidth=1, linewidth=0, alpha=0.5, ecolor='blue', capsize=10, color='white')
         ax.set_ylabel('Confidence Interval')
         #ax.set_xticks(x_pos)
         #ax.set_xticklabels(materials)
@@ -127,9 +135,9 @@ def plot_cint(param, dataset, comm):
         ax.yaxis.grid(True)
         
         plt.tight_layout()
-        plt.savefig('bar_plot_with_error_bars.png')
+        #plt.savefig('bar_plot_with_error_bars.png')
         plt.show()
-        
+
         # plt_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
         # plt_name = plt_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" + "allplts.png"
         # fig.savefig(plt_name)
