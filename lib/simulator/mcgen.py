@@ -1,6 +1,8 @@
-# from tick.base import TimeFunction
-# from tick.hawkes import SimuHawkesExpKernels
-# from tick.plot import plot_point_process
+#
+# SBooM
+#
+# @authors : Carlotta De Pasquale
+
 from lib import Hawkes as hk
 import numpy as np
 import matplotlib.pyplot as plt

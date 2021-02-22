@@ -1,3 +1,8 @@
+#
+# SBooM
+#
+# @authors : Carlotta De Pasquale
+
 import argparse
 import random
 

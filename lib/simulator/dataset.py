@@ -1,3 +1,8 @@
+#
+# SBooM
+#
+# @authors : Carlotta De Pasquale
+
 import numpy as np
 
 def init_dataset(param):

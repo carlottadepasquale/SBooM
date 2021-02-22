@@ -1,5 +1,5 @@
 #
-# BootMCHawkes
+# SBooM
 #
 # @authors : Carlotta De Pasquale
 import logging
