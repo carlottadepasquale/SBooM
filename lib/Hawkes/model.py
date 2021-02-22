@@ -934,8 +934,8 @@ def plot_N(T,itv):
 
     gs = gridspec.GridSpec(100,1)
 
-    plt.figure(figsize=(4,5), dpi=100)
-    mpl.rc('font', size=12, family='Arial')
+    plt.figure(figsize=(10,10), dpi=100)
+    mpl.rc('font', size=20, family='Arial')
     mpl.rc('axes',titlesize=12)
     mpl.rc('pdf',fonttype=42)
 
@@ -945,7 +945,7 @@ def plot_N(T,itv):
     y = np.repeat(np.arange(n+1),2)
 
     plt.subplot(gs[0:10,0])
-    plt.plot(np.hstack([ [t,t,np.NaN] for t in T]),np.array( [0,1,np.NaN] * n ),'k-',linewidth=0.5)
+    plt.plot(np.hstack([ [t,t,np.NaN] for t in T]),np.array( [0,1,np.NaN] * n ),'k-',linewidth=0.5, color='navy')
     plt.xticks([])
     plt.xlim(itv)
     plt.ylim([0,1])
@@ -955,7 +955,7 @@ def plot_N(T,itv):
     plt.gca().spines['left'].set_visible(False)
 
     plt.subplot(gs[15:100,0])
-    plt.plot(x,y,'k-',clip_on=False)
+    plt.plot(x,y,'k-',clip_on=False, color='firebrick')
     plt.xlim(itv)
     plt.ylim([0,n])
     plt.xlabel('time')
@@ -967,8 +967,8 @@ def plot_l(T,x,l,l_baseline):
 
     gs = gridspec.GridSpec(100,1)
 
-    plt.figure(figsize=(4,5), dpi=100)
-    mpl.rc('font', size=12, family='Arial')
+    plt.figure(figsize=(10,10), dpi=100)
+    mpl.rc('font', size=20, family='Arial')
     mpl.rc('axes',titlesize=12)
     mpl.rc('pdf',fonttype=42)
 
@@ -976,7 +976,7 @@ def plot_l(T,x,l,l_baseline):
     n = len(T)
 
     plt.subplot(gs[0:10,0])
-    plt.plot(np.hstack([ [t,t,np.NaN] for t in T]),np.array( [0,1,np.NaN] * n ),'k-',linewidth=0.5)
+    plt.plot(np.hstack([ [t,t,np.NaN] for t in T]),np.array( [0,1,np.NaN] * n ),'k-',linewidth=0.5, color='navy')
     plt.xticks([])
     plt.xlim([x[0],x[-1]])
     plt.ylim([0,1])
@@ -986,7 +986,7 @@ def plot_l(T,x,l,l_baseline):
     plt.gca().spines['left'].set_visible(False)
 
     plt.subplot(gs[15:100,0])
-    plt.plot(x,l,'k-',lw=1)
+    plt.plot(x,l,'k-',lw=1, color='darkcyan')
     plt.plot(x,l_baseline,'k:',lw=1)
     plt.xlim([x[0],x[-1]])
     plt.ylim([0,l_max])

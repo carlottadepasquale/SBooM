@@ -113,6 +113,12 @@ def main():
 
     ####################
 
+    # if "plt_pr" in param["execution"]:
+    #     from lib.inout import plot
+    #     plot.plot_process(dataset)
+
+    ####################
+
     tcint0 = MPI.Wtime()
 
     if "cint1" in param["execution"]:

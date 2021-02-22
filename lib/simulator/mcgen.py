@@ -50,7 +50,7 @@ def simulator(param, dataset, comm):
     ste_error_count = np.zeros(1)
     ste_error_count_tot = np.zeros(1)
 
-    opt = ['stderr']
+    opt = ['stderr'] #, 'print', 'check']
 
     for i in dataset['id']:
         
@@ -150,6 +150,10 @@ def simulator(param, dataset, comm):
         log_string += ("- Avg time Hawkes: " + avgt_format.format(n=avg_t_sim) +"\n" + "- Avg time inference: "+ avgt_format.format(n=avg_t_est))
 
         logger.info(log_string)
+
+        if "plt_pr" in param["execution"]:
+            from lib.inout import plot
+            plot.plot_process(dataset, model)
 
 def parameter_check(model, call, br_out=[0], alpha_out=[0], beta_out=[0], mu_out=[0]):
     keep=True

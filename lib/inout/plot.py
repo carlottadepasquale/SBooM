@@ -12,7 +12,7 @@ import logging
 from mpi4py import MPI
 import os
 
-def plot_process(dataset):
+def plot_process(dataset, model):
     model.plot_l()
     model.plot_N()
     plt.show()
@@ -45,11 +45,13 @@ def plot_estimate(param, dataset, comm):
         # est_par = {'alpha': alpha_all, 'beta': beta_all, 'mu': mu_all}
         # df = pd.DataFrame(est_par, columns=['alpha', 'beta', 'mu'])
         max_alpha = np.max(alpha_all)
+        max_beta = np.max(beta_all)
+        max_mu = np.max(mu_all)
         min_alpha = np.min(alpha_all)
         min_beta = np.min(beta_all)
         min_mu = np.min(mu_all)
-        logger.debug("Alpha max: " + str(max_alpha))
-        logger.debug("Alpha, beta, mu min: " + str(min_alpha) + str(min_beta) + str(min_mu))
+        logger.info("Alpha, beta, mu max: " + str(max_alpha) + "   " +str(max_beta)+  "   " +str(max_mu))
+        logger.info("Alpha, beta, mu min: " + str(min_alpha) + str(min_beta) + str(min_mu))
         
         fig, ax =plt.subplots(1,3)
         plt.subplots_adjust(wspace = 0.35)
@@ -65,7 +67,9 @@ def plot_estimate(param, dataset, comm):
         b.set_title('beta')
         m.set_title('mu')
         plt_name = param['dataset_dir'] + param['outprefix'] + "_" + str(param['mu']) + "_" + str(param['alpha']) + "_" + str(param['beta'])+"/"
-        plt_name = plt_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" + "allplts.png"
+        plt_name = plt_name + "N_" + str(param['n']) + "_T_" + str(int(param['t'])) + "/" 
+        os.makedirs(plt_name,  exist_ok=True)
+        plt_name = plt_name + "allplts.png"
         fig.savefig(plt_name)
         logger.info("Plot saved in " + str(plt_name))
         #aplt = sns.displot(alpha_all, kind='hist')
@@ -135,7 +139,7 @@ def plot_cint(param, dataset, comm):
         #ax.set_yticklables(ylables, fontsize=8)
         #ax.set_xticks(x_pos)
         #ax.set_xticklabels(materials)
-        ax.set_title('Bootstrap vs Asymptotic Confidence intervals', fontsize=30)
+        ax.set_title('Bootstrap vs Asymptotic Confidence intervals, α', fontsize=30)
         ax.yaxis.grid(True)
         
         plt.tight_layout()
