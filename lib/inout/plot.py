@@ -44,20 +44,22 @@ def plot_estimate(param, dataset, comm):
     if param['rank'] == 0:
         # est_par = {'alpha': alpha_all, 'beta': beta_all, 'mu': mu_all}
         # df = pd.DataFrame(est_par, columns=['alpha', 'beta', 'mu'])
+        beta_sort = np.sort(beta_all)
+        logger.debug("beta_max" + str(beta_sort[-10:]))
         max_alpha = np.max(alpha_all)
         max_beta = np.max(beta_all)
         max_mu = np.max(mu_all)
         min_alpha = np.min(alpha_all)
         min_beta = np.min(beta_all)
         min_mu = np.min(mu_all)
-        logger.info("Alpha, beta, mu max: " + str(max_alpha) + "   " +str(max_beta)+  "   " +str(max_mu))
-        logger.info("Alpha, beta, mu min: " + str(min_alpha) + str(min_beta) + str(min_mu))
+        logger.debug("Alpha, beta, mu max: " + str(max_alpha) + "   " +str(max_beta)+  "   " +str(max_mu))
+        logger.debug("Alpha, beta, mu min: " + str(min_alpha) + str(min_beta) + str(min_mu))
         
         fig, ax =plt.subplots(1,3)
         plt.subplots_adjust(wspace = 0.35)
         a = sns.histplot(alpha_all, ax=ax[0])
-        b = sns.histplot(beta_all, ax=ax[1])
-        m = sns.histplot(mu_all, ax=ax[2])
+        b = sns.histplot(beta_all, ax=ax[1], color='lightcoral')
+        m = sns.histplot(mu_all, ax=ax[2], color='mediumpurple')
         vlines = [param['alpha'], param['beta'], param['mu']]
         v=0
         for ax in fig.axes:
