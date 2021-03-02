@@ -1,0 +1,3 @@
+[submodule "lib/Hawkes"]
+	path = lib/Hawkes
+	url = https://github.com/carlottadepasquale/Hawkes.git
