@@ -8,6 +8,8 @@ import os
 import h5py
 import json
 import sys
+import math
+import numpy as np
 
 from lib.simulator import dataset
 
@@ -223,4 +225,18 @@ def fill_dataset_bt(param, mcb_dataset, id, id_local, fr):
     m = (fr[bm][:])
 
     mcb_dataset['bootstrap'].append({'alpha': a, 'beta': b , 'mu': m})
-        
+
+def read_csv(param, dataset):
+    import csv
+    csv_file = param['input_csv']
+    t_list = []
+    with open(csv_file, newline='') as csvfile:
+        csv_t = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        for row in csv_t:
+            f = float(row[0])
+            t_list.append(f)
+    
+    dataset['t'].append(t_list)
+    param['t'] = math.ceil(t_list[-1]) + 2
+    print('t: ', param['t'])
+    #print('datasetT: ', dataset['t'])

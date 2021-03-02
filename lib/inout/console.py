@@ -18,6 +18,7 @@ def init():
     parser.add_argument('-e','--execution', nargs='+', help='type of execution')
     parser.add_argument('--dataset_dir', help='where to save the dataset')
     parser.add_argument('--input', help='name of the dataset')
+    parser.add_argument('--input_csv', help='csv file to be analyzed')
     parser.add_argument('--log_level', help='logger level (DEBUG, INFO, WARNING, CRITICAL)')
     argn = parser.parse_args()
     console_param = {}
@@ -51,6 +52,9 @@ def init():
     if argn.input:
         name = argn.input
         console_param["input"] = name
+    if argn.input_csv:
+        name_csv = argn.input_csv
+        console_param["input_csv"] = name_csv
     if argn.log_level:
         log_level = argn.log_level
         console_param["log_level"] = log_level

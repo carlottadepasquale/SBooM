@@ -52,7 +52,7 @@ def simulator(param, dataset, comm):
     ste_error_count = np.zeros(1)
     ste_error_count_tot = np.zeros(1)
 
-    opt = ['stderr'] #, 'print', 'check']
+    opt = ['stderr'] #'check'] #, 'print', 'check']
 
     for i in dataset['id']:
         

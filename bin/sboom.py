@@ -55,6 +55,15 @@ def main():
         dataset = dataset.init_dataset(param)
     tread = MPI.Wtime() - tread0
 
+    #####################
+
+    if "analyze" in param['execution']:
+        reader.read_csv(param, dataset)
+        from lib.analyzer import estimate_csv
+        estimate_csv.estimate_exp(param, dataset)
+        estimate_csv.bootstrap_cint(param, dataset, comm)
+
+    #####################
 
     if rank==0:    
         logger.critical("Reader time: "+ time_format.format(t=tread))
