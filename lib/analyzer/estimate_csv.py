@@ -27,3 +27,4 @@ def bootstrap_cint(param, dataset, comm):
     bootstrap.confidence_int_2(param, dataset, comm)
     bootstrap.confidence_int_3(param, dataset, comm)
     bootstrap.confidence_int_4(param, dataset, comm)
+    bootstrap.confidence_int_5(param, dataset, comm)
