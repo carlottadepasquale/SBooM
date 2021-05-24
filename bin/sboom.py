@@ -125,9 +125,9 @@ def main():
 
     ####################
 
-    # if "plt_pr" in param["execution"]:
-    #     from lib.inout import plot
-    #     plot.plot_process(dataset)
+    if "plt_pr" in param["execution"]:
+        from lib.inout import plot
+        plot.plot_process(dataset)
 
     ####################
 
@@ -159,7 +159,7 @@ def main():
         logger.critical("Confidence intervals time: "+ time_format.format(t=tcint)) 
 
     ####################
-    if "plt1" in param["execution"]:
+    if "plt_cint" in param["execution"]:
         from lib.inout import plot
         plot.plot_cint(param, dataset, comm)
     ####################

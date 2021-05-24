@@ -21,8 +21,9 @@ def estimate_exp(param, dataset):
     print('mu est: ', dataset['mu'][0])
 
 def bootstrap_cint(param, dataset, comm):
+    #logger=logging.getLogger(param["logger"]) 
     bootstrap.bootstrap(param, dataset, comm)
-    print('bt: ', dataset['bootstrap'])
+    #print('bt: ', dataset['bootstrap'])
     bootstrap.confidence_int_1(param, dataset, comm)
     bootstrap.confidence_int_2(param, dataset, comm)
     bootstrap.confidence_int_3(param, dataset, comm)

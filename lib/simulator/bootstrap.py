@@ -107,6 +107,11 @@ def confidence_int_1(param, dataset, comm):
         log_str += '- method1_beta_bt:   ' + cint_format.format(t=(beta_1_ok_tot[0]/dataset['n_it']*100)) + '%\n'
         log_str += '- method1_mu_bt:     ' + cint_format.format(t=(mu_1_ok_tot[0]/dataset['n_it']*100)) + '%\n'
 
+        if "analyze" in param["execution"]:
+            log_str += '\n -alpha confidence interval 1: ' + str(q1alpha) + ' , ' + str(q2alpha)
+            log_str += '\n -beta confidence interval 1: ' + str(q1beta) + ' , ' + str(q2beta)
+            log_str += '\n -mu confidence interval 1: ' + str(q1mu) + ' , ' + str(q2mu)
+        
         logger.info(log_str)
 
 def confidence_int_2(param, dataset, comm):
@@ -163,6 +168,12 @@ def confidence_int_2(param, dataset, comm):
         log_str = '\n- method2_alpha_bt: ' + cint_format.format(t=(alpha_2_ok_tot[0]/dataset['n_it']*100)) + '%\n'
         log_str += '- method2_beta_bt: ' + cint_format.format(t=(beta_2_ok_tot[0]/dataset['n_it']*100)) + '%\n'
         log_str += '- method2_mu_bt: ' + cint_format.format(t=(mu_2_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        
+        if "analyze" in param["execution"]:
+            log_str += '\n -alpha confidence interval 2: ' + str(dataset['cint_alpha_2'][-1][1]) + ' , ' + str(dataset['cint_alpha_2'][-1][0])
+            log_str += '\n -beta confidence interval 2: ' + str(dataset['cint_beta_2'][-1][1]) + ' , ' + str(dataset['cint_beta_2'][-1][0])
+            log_str += '\n -mu confidence interval 2: ' + str(dataset['cint_mu_2'][-1][1]) + ' , ' + str(dataset['cint_mu_2'][-1][0])
+       
         logger.info(log_str)
 
     
@@ -216,11 +227,16 @@ def confidence_int_3(param, dataset, comm):
     # print("mu cint 3: ", dataset['cint_mu_3'])
 
     if param['rank'] ==0:
-        log_string = '\n- method3_alpha_bt: '+ cint_format.format(t=(alpha_3_ok_tot[0]/dataset['n_it']*100)) + '%\n'
-        log_string += '- method3_beta_bt:   '+ cint_format.format(t=(beta_3_ok_tot[0]/dataset['n_it']*100)) + '%\n'
-        log_string += '- method3_mu_bt:     '+ cint_format.format(t=(mu_3_ok_tot[0]/dataset['n_it']*100)) + '%\n'
-
-        logger.info(log_string)
+        log_str = '\n- method3_alpha_bt: '+ cint_format.format(t=(alpha_3_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        log_str += '- method3_beta_bt:   '+ cint_format.format(t=(beta_3_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        log_str += '- method3_mu_bt:     '+ cint_format.format(t=(mu_3_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        
+        if "analyze" in param["execution"]:
+            log_str += '\n -alpha confidence interval 3: ' + str(q1alpha) + ' , ' + str(q2alpha)
+            log_str += '\n -beta confidence interval 3: ' + str(q1beta) + ' , ' + str(q2beta)
+            log_str += '\n -mu confidence interval 3: ' + str(q1mu) + ' , ' + str(q2mu)
+        
+        logger.info(log_str)
     
 
 
@@ -283,11 +299,16 @@ def confidence_int_4(param, dataset, comm):
     # print("mu cint 4: ", dataset['cint_mu_4'])
 
     if param['rank'] ==0:
-        log_string = '\n- method4_alpha_bt: '+ cint_format.format(t=(alpha_4_ok_tot[0]/dataset['n_it']*100))+ '%\n'
-        log_string += '- method4_beta_bt: '+ cint_format.format(t=(beta_4_ok_tot[0]/dataset['n_it']*100))+ '%\n'
-        log_string += '- method4_mu_bt: '+ cint_format.format(t=(mu_4_ok_tot[0]/dataset['n_it']*100)) +'%\n'
-
-        logger.info(log_string)
+        log_str = '\n- method4_alpha_bt: '+ cint_format.format(t=(alpha_4_ok_tot[0]/dataset['n_it']*100))+ '%\n'
+        log_str += '- method4_beta_bt: '+ cint_format.format(t=(beta_4_ok_tot[0]/dataset['n_it']*100))+ '%\n'
+        log_str += '- method4_mu_bt: '+ cint_format.format(t=(mu_4_ok_tot[0]/dataset['n_it']*100)) +'%\n'
+       
+        if "analyze" in param["execution"]:
+            log_str += '\n -alpha confidence interval 4: ' + str(dataset['cint_alpha_4'][-1][1]) + ' , ' + str(dataset['cint_alpha_4'][-1][0])
+            log_str += '\n -beta confidence interval 4: ' + str(dataset['cint_beta_4'][-1][1]) + ' , ' + str(dataset['cint_beta_4'][-1][0])
+            log_str += '\n -mu confidence interval 4: ' + str(dataset['cint_mu_4'][-1][1]) + ' , ' + str(dataset['cint_mu_4'][-1][0])
+       
+        logger.info(log_str)
 
 def confidence_int_5(param, dataset, comm):
 
@@ -339,11 +360,15 @@ def confidence_int_5(param, dataset, comm):
     # print("mu cint 3: ", dataset['cint_mu_3'])
 
     if param['rank'] ==0:
-        log_string = '\n- method5_alpha_bt: '+ cint_format.format(t=(alpha_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
-        log_string += '- method5_beta_bt:   '+ cint_format.format(t=(beta_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
-        log_string += '- method5_mu_bt:     '+ cint_format.format(t=(mu_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        log_str = '\n- method5_alpha_bt: '+ cint_format.format(t=(alpha_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        log_str += '- method5_beta_bt:   '+ cint_format.format(t=(beta_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
+        log_str += '- method5_mu_bt:     '+ cint_format.format(t=(mu_5_ok_tot[0]/dataset['n_it']*100)) + '%\n'
 
-        logger.info(log_string)
+        if "analyze" in param["execution"]:
+            log_str += '\n -alpha confidence interval 5: ' + str(q1alpha) + ' , ' + str(q2alpha)
+            log_str += '\n -beta confidence interval 5: ' + str(q1beta) + ' , ' + str(q2beta)
+            log_str += '\n -mu confidence interval 5: ' + str(q1mu) + ' , ' + str(q2mu)
+        logger.info(log_str)
     
     
 def stderr_calc(param, dataset, comm):
