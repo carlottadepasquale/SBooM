@@ -57,10 +57,6 @@ A peculiarity of this software is that the user can choose which parts of the pr
 - **save_bt**: saves the result found by B in a preset folder.
 - **cint1-cint3**: perform the confidence intervals of the bootstrap estimates using 3 different methods.
 - **plt**: plots graphs of the simulated process
-<img src="/home/carlottade/Tesi/Plots/allplts2.png"
-     alt="Allplts"
-     style="float: left; margin-right: 10px;" />
-![Allplts2](/home/carlottade/Tesi/Plots/allplts2.png)
 - **plt_cint**: plots graphs about the confidence intervals
 
 The software can also perform the bootstrap simulation or the confidence intervals calculation starting from a previously simulated dataset. By using the flag **--input** the user can give the software the path of a previously saved simulation on which to compute the desired steps.
